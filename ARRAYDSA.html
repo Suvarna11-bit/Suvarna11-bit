@@ -1,0 +1,211 @@
+//DSA ARRAY QUESTIONS
+
+//question is contain duplicates(Hashing)
+
+//input =[1,2,3,1] , input = [1,2,3,4]
+//tip : set is something which is collection of unique values, n is duplicate elemnt here , checking if it jas any duplicate return true else return false
+
+var containDuplicates = function(nums){
+    const Map = new Map()
+    for (const n of nums){
+        if(Map.has(n))return true
+            Map.set(n,true)
+    }
+    return false
+};
+
+//2 approach
+
+//we can also compare lengths  if length is not equal then it has duplicates
+
+var containDuplicates= function(nums){
+    const set = new Set(nums)      ///creating new set to store unique values 
+    return set.size !== nums.length  //return if set.size if it is not equal to nums , if duplicate true otherwise false .
+};
+
+
+//question 2 : Valid Anagram
+//an anagram is word which is formed by rearranging the letters , by using original letters only once
+//input => s ="anagram",t="nagarm"  O/P -> true
+//input => s ="rat",t="cat"  O/P -> false
+
+
+//trick: if map return 0 -> true , if map is 1 ->false
+
+//if i go through javascript library
+
+var isAnagram = function(s,t){
+    return s.split(" ").sort().join("") === t.split(" ").sort().join("")   //here we are comparing everything one by one 
+};
+
+//2 approach:- comapre length and create new map and also  if encounterd 1 time then return 1 if not then increment by 1 at every step
+
+var isAnagram = function(s,t){
+    if(s.length !== t.length)return false
+    const map = new Map()
+    for(const c of s){   //c is duplicate here 
+        if(map.has(c))
+        map.set(c,map.get(c)+1)
+        else map.set(c,1)
+    }
+
+    for(const c of t){   //c is duplicate here 
+        if(map.has(c)) return false    //that means map has dupliactes 
+        map.set(c,map.get(c)-1)        //duplicate then decrement by 1   
+        else (map.get(c) === 0) map.delete(c)    //if 0 then delete map 
+    }
+
+    if(map.size>0) return false       //if contain dupliacte then not valid anagram , if not it is 
+    return true
+};
+
+//question is Two Sum(Hashing)
+//given an array of integers nums and integer target , return indices of two numbers such way they add up to target==> dont use same element twice
+
+//input-> nums=[2,7,11,15] target = 9  output = [0,1]
+
+var twoSum = function(nums,target){
+    const Map = new Map()                         //created a new map to store value
+    for (const index in nums){                    //checking for index in i/p
+        const pairTarget = target - nums[index]      //9-2, 9-7
+        if(map.has(pairTarget))                      //if map has pair target then we will gte its index and that is or output(7,2)(0,1)
+        return [map.get(pairTarget),index]        
+        map.set(nums[index],index)                    //[0,1]
+    }
+};
+
+//question is product of array except self:-(Sliding Window)
+//given integer array nums,return an array answer such ans[1] = product of all element of nums except nums[i]
+
+//input = nums=[1,2,3,4] o/p = [24,12,8,6] left:[1,2,6,24] right:[24,24,12,4]
+
+var productExceptSelf = function(nums){
+    const n = nums.length
+    const left = new Array(n).fill(0)  //left array
+    const right = new Array(n).fill(0)  //right array
+    const output = new Array(n).fill(0)    //ans array
+    // left[1] will be the product of nums[0] and nums[1], left[2] will be the product of nums[0], nums[1], and nums[2], and so on.
+    left[0] = nums[0]
+
+    //right[n - 2] will be the product of nums[n - 1] and nums[n - 2], right[n - 3] will be the product of nums[n - 1], nums[n - 2], and nums[n - 3], and so on.
+    right[n-1] = nums[n-1]
+    for(let i=1;i<n;i++){
+        left[i] = left[i-1]*nums[i]
+}
+for(let i=n-2;i>0;i--){
+    right[i] = right[i+1]*nums[i]
+}
+//output[1] will be the product of left[0] and right[2], output[2] will be the product of left[1] and right[3], and so on.
+output[0] = right[1]
+output[n-1] = left[n-2]
+
+for(let i=1;i<n-1;i++){
+    output[i] = left[i-1]*right[i+1]
+}
+return output
+};
+
+//question is maximum subarray (Sliding Window)(Kadane's algorithm):-(contigues non empty sequence of element within array)
+//given an integer array nums, find subarray with largest sum and return its sum.
+//i/p  nums=[-2,1,-3,4,-1,2,1,-5,4] o/p = 6
+
+//explanation
+sm starts at 0, and mx starts at -2 (the first element of the array).
+sm becomes -2 + 1 = -1, and mx remains -2.
+sm becomes -1 - 3 = -4, and mx remains -2. Since sm is negative, it is reset to 0.
+sm becomes 0 + 4 = 4, and mx becomes 4 (since 4 is greater than -2).
+sm becomes 4 - 1 = 3, and mx remains 4.
+sm becomes 3 + 2 = 5, and mx becomes 5 (since 5 is greater than 4).
+sm becomes 5 + 1 = 6, and mx becomes 6 (since 6 is greater than 5).
+sm becomes 6 - 5 = 1, and mx remains 6.
+sm becomes 1 + 4 = 5, and mx remains 6.
+
+var maxSubArray = fucntion(nums){
+    let mx = nums[0]   //store maxinum subarray
+    let sm = 0         //store sum of current subarray
+    nums.forEach(n) => {
+        sm += n               //adding current element to subarray
+        mx = Math.max(mx,sm)    //update mx = if sm is greater 
+        if(sm<0) sm=0           //if sm < 0 or negative  reset sm = 0
+    }
+    return mx
+};
+
+
+//question is Container with most water 
+//given an integer array with height of length n.there are n vertical lines drawn such that two endpointsof the ith line are (i,0) and (i,highest[i])
+//find 2 lines that together with x-axis form a container such that container contains most water return max. amount of water a container can store
+//i/p  height = [1,8,6,2,5,4,8,3,7]    o/p = 56  l=0,r=8
+
+var maxArea = function(height){
+    let mx=0    //maximum sum is 0
+    let l = 0   //length
+    let r = height.length - 1     //
+    while(l < r) {
+        mx=Math.max(mx,Math.min(height[l],height[r])) * (r-l) 
+        //maximum area ,min height of 2 lines * distance between them
+        //height[0],height[8] * [8-0] = 1 * 8 = 8(mx), height 8 >height 0 , so incremented l to 1
+
+        else if(height[r] < height[l])    //loop will continue until l is greater or equal to r 
+            r -= 1
+        else{
+            l += 1
+            r -= 1
+        }
+    }
+    return mx;
+}
+
+//question is of insert interval 
+//we have an array of intervals already sorted have index, and have new array, and we need to insert it into existingreturn intervals after intersection
+//i/p = [[1,2],[3,5],[6,7],[8,10],[12,16]]   new = [4,8]
+
+
+var insert = function(intervals, newInterval){
+    const result = []
+    for(const interval of intervals )
+    if(interval[1] < newInterval[0]){   //if current interval ends before new one , then does not overlap
+        result.push(interval)           //so pushing to result array
+    }
+    else if(interval[0] > newInterval[1]){    //cureent starts before new , then true , doesn't overlap
+        result.push(newInterval)         
+        newInterval = interval
+        // result.push(newInterval)
+    }else{
+        newInterval[0] = Math.min(interval[0],newInterval[0])
+        newInterval[1] = Math.max(interval[1],newInterval[1])
+    }
+result.push(newInterval)
+return result
+};
+
+
+//question is of merge interval
+//given array of intervals where intervals[i] = [start,end],merge all overlapping intervals and return an array
+//of non overlapping intervals that cover all intervals in input.
+
+//i/p = [[1,3],[2,6],[8,10],[15,18]]
+//o/p = [[1,6],[8,10],[15,18]]
+
+pair is initialized to [1,3].
+The loop iterates through the list of intervals. When it encounters [2,6], it merges it into pair because [2,6] overlaps with [1,3]. The new pair is [1,6].
+The loop continues and encounters [8,10]. Since [8,10] does not overlap with [1,6], it adds [1,6] to the result array and updates pair to be [8,10].
+The loop continues and encounters [15,18]. Since [15,18] does not overlap with [8,10], it adds [8,10] to the result array and updates pair to be [15,18].
+After the loop finishes, the code adds the last merged interval [15,18] to the result array.
+The final result array is [[1,6],[8,10],[15,18]].
+
+
+var merge = function(intervals){
+    intervals = intervals.sort((a,b) => a[0] - b[0])
+    const result = []
+    let pair = intervals[0]
+    for(const i of intervals)
+    if(pair[1] >= i[0]) {
+        pair[1] = Math.max(pair[1],i[1])
+    }else{
+        result.push(pair)
+        pair = i
+    }
+    result.push(pair)
+    return result
+};
