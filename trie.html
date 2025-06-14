@@ -1,0 +1,346 @@
+Trie :- it is tree like data structure used to store dynamic set of strings , where each node represents a charater of string .
+
+question is trie insert and search 
+
+each node typically contains :
+1. a amap or array (children) to store references to child nodes (one for each character)
+2. a boolean flag is EndofWord to mark if word ends at that node.
+
+
+===================================CODE=============================
+
+class TrieNode{
+      constructor(){
+        this.children = {};
+        this.isEndOfWord = false;
+      }
+}
+
+
+class Trie{
+    constructor{
+        this.root = new TrieNode();
+    }
+
+    //Insert a word into the trie
+
+    insert(word){
+        let node = this.root;
+        for (let char of word){
+            if(!node.children[char]){
+                node.children[char] = new TrieNode();
+    
+            }
+            node = node.children[char];
+        }
+        node.isEndOfWord  = true;
+    }
+
+    //search for word in trie
+
+    search(word){
+        let node = this.root;
+        for(let char of word){
+            if(!node.children[char]){
+                return false;
+            }
+            node = node.children[char];
+        }
+        return node.isEndOfWord;
+    }
+}
+
+
+This is how it works 
+const trie = new Trie();
+trie.insert("apple");
+trie.insert("app");
+
+console.log(trie.search("apple")); // true
+console.log(trie.search("app"));   // true
+console.log(trie.search("appl"));  // false
+
+
+
+Question is Counting number of words in trie :- (Trie with count add)
+
+== we have several words , now need to check how many complete words exist in it .
+
+complete word ends , isEndOfWord = true.
+
+===========================Code============================
+
+class TrieNode, Trie , and insert remains same 
+
+// count total words stored in  the trie
+
+countWords(){
+    const count = (node){
+        let total = 0;
+
+        if(node.isEndOfWord) total++; //for one complete word 
+
+        for(let char in node.children){
+            total += count(node.children[char]);
+        }
+        return total;
+    };
+    return count(this.root);
+}
+
+question is trie delete :--
+
+delete a specific word without affecting other words to share prefixes.
+
+1.only delete when not shared with any other word .
+2.otherwise , we just mark isEndOfWord flag.
+
+
+======================CODE===========================
+trienode,trie and insert remains same 
+
+delete(word){
+    const deleteHelper = (node,word,index) => {
+        if(index === word.length){
+            if(!node.isEndOfWord) return false;   //word not present
+            node.isEndOfWord = false;
+
+            //if no children ,node can be deleted 
+
+            return Object.keys(node.children).length === 0;
+        }
+
+        const char = word[index];
+        const childNode = node.children[char];
+        if(!childNode) return false;  //char not found , word not present 
+
+        const shouldDeleteChild = deleteHelper(childNode, word, index + 1);
+
+        if(shouldDeleteChild){
+            delete node.children[char];  //delete the link
+
+            //return true if current node has no other children and is not end of number word 
+
+            return(
+                Object.keys(node.children).length === 0 && !node.isEndOfWord
+            );
+        }
+        return false;
+    };
+    deleteHelper(this.root,word,0);
+}
+
+Recursively move down to the last character.
+If that node has no children and is not used by other words, delete it.
+As you return back, check each parent if it also becomes useless and can be deleted.
+========usage example
+const trie = new Trie();
+trie.insert("apple");
+trie.insert("app");
+
+trie.delete("apple");  // removes only extra nodes (l → e)
+
+console.log(trie);     // "app" will still exist in the Trie
+
+
+Question is Longest common prefix using trie:-(Trie traversal with single branches)
+
+Input: ["flower", "flow", "flight"]  
+Output: "fl"
+
+steps:-
+1.insert al, words in a Trie
+2.traverse from the root 
+  a.as long as the current node has only one child and is not end of word ,
+     add character to prefix.
+3. stop when:
+a.current node has more than one child , -> prefix ends , branching
+b. isEndOfWord = true -> one of word ends -> prefix ends 
+
+
+=========================CODE===============================
+
+TILL insert an deverything same 
+
+longestCommonPrefix(){
+    let prefix = "";
+    let node = this.root;
+
+    while(
+        Object.keys(node.children).length === 1 && !node.isEndOfWord
+    ){
+        const nextChar = Object.keys(node.children)[0];
+        prefix += nextChar;
+        node = node.children[nextChar];
+    }
+    return prefix;
+}
+}
+
+//function to find LCP 
+
+function findLCP(words){
+    const trie = new Trie();
+    for(let word of words ){
+        trie.insert(word);
+    }
+    return trie.longestCommonPrefix();
+}
+
+
+
+Question is Print Unique Rows in Binary Matrix:- (Pattern Matching,hashset)
+
+Input:
+matrix = [
+  [1, 0, 0, 1],
+  [1, 0, 0, 1],
+  [0, 1, 1, 0],
+  [0, 1, 1, 0],
+  [0, 0, 0, 1]
+]
+
+Output:
+[1, 0, 0, 1]  
+[0, 1, 1, 0]  
+[0, 0, 0, 1]
+
+
+==you can treat each row as a string or tuple and use a set to keep track of which rows you have seeing
+
+=============================CODE==========================
+
+fucntion printUniquerows(matrix){
+    const set = new Set();
+
+    for(let row of matrix){
+        const key = row.join('');    // convert row to strings
+        if(!set.has(key)){
+            console.log(row);
+            set.add(key);
+        }
+    }
+}
+
+
+Question is Minimum XOR Value Pair (Sorting):--
+
+1- bits are different , 0 - bits are same 
+
+a = 5  →  0101 (in binary)
+b = 3  →  0011
+
+a ^ b = 0110 → 6
+
+
+STEPS:-
+1.sort the array
+2.only check adjacent pairs in the sorted array 
+3.why? because close numbers have smaller XOR values (in terms of bits).
+
+=====================CODE===================
+
+
+function findminXOR(arr){
+    arr.sort((a.b) => a - b);
+    let minXor = Infinity;                   
+    for(let i = 0; i < arr.length; i ++){
+        minXor = Math.min(minXor,arr[i] ^ arr[i+1]);
+    }
+    return minXor;
+}
+
+Question is Palindrome Pair in Array of Words ( trie + reverse):-
+
+
+steps :- 
+1. insert reverse words in trie
+2. while measuring track , which parts are palindrome 
+3. while searching , try to match prefixes in trie and check if rest of word is pla
+
+Example: Input = ["bat", "tab", "cat"]
+Insert reversed words:
+
+"tab" → Trie
+"bat" → Trie
+"tac" → Trie
+
+
+
+=================CODE==================================
+
+
+clas TrieNode{
+    constructor(){
+        this.children = new Map();
+        this.index = -1;
+        this.palindromeSuffixes = [];
+    }
+}
+
+fucntion isPalindrome(word,left = 0,right = word.length -1){
+    while(left < right){
+        if(word[left] !== word[right])return false;
+        left++;
+        right--;
+    }
+    return true;
+}
+
+function PalindromePirs(words){
+    const root = new TrieNode();
+
+    //Insert reversed words into trie
+
+    for (let i = 0; i < words.length ; i ++){
+        const word = words[i];
+        let node = root;
+
+        for(let j = word.length - 1 ; j >= 0 ; j--){
+            if(isPalindrome(word,0,j)){
+                node.palindromeSuffixes.push(i);
+            }
+
+            const ch = word[j];
+            if(!node.children.has(ch)){
+                node.children.set(ch,new TrieNode());
+            }
+            node = node.children.get(ch);
+        }
+
+        node.index = i;
+        node.palindromSuffixes.push(i);     //whole wprd is palindrome
+    }
+
+    const result = [];
+
+
+    //search each word in trie
+
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        let node = root;
+
+        for (let j = 0; j < word.length; j++) {
+            // Case 1: current node is the end of another word
+            if (node.index >= 0 && node.index !== i && isPalindrome(word, j, word.length - 1)) {
+                result.push([i, node.index]);
+            }
+
+            const ch = word[j];
+            if (!node.children.has(ch)) {
+                node = null;
+                break;
+            }
+            node = node.children.get(ch);
+        }
+
+        if (node !== null) {
+            // Case 2: check for all remaining palindromeSuffixes
+            for (const j of node.palindromeSuffixes) {
+                if (i !== j) {
+                    result.push([i, j]);
+                }
+            }
+        }
+    }

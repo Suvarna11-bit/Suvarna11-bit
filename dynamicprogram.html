@@ -1,0 +1,436 @@
+Dynamic Programming :-
+
+Question is 0 to 1 Knapsack 
+given n items with weight and value , knapsack with max capacity W.
+Weights = [1, 3, 4, 5]
+Values  = [1, 4, 5, 7]
+Capacity W = 7
+
+
+
+==========================CODE==========================
+
+function knapsack(wt,val,W,n){
+    const dp = Array(n+1).fill().map(() => Array(W+1).fill(0));
+
+    for (let i = 1; i <= n ; i++){
+        for(let w = 1;w <= W;w++){
+            if(wt[i-1] <= w){
+                dp[i][w] = Math.max(                //means max value using first i items with weight limit w 
+                    val[i - 1] + dp[i-1][w- wt[i - 1]],     //include the item
+                    dp[i - 1][w]                            //exclude the item,
+                );
+            }else{
+                dp[i][w] = dp[i-1][w];                    //if can't include , the copy from above
+            }
+        }
+    }
+return dp[n][W];
+}
+
+
+question is Stickler theif (variation of house robber problem ):
+
+Input: arr = [5, 5, 10, 100, 10, 5]
+Output: 110
+Explanation:
+Pick 5 + 100 + 5 = 110
+(5 from house 1, skip house 2 and 3, take 100 from house 4, skip house 5, take 5 from house 6)
+
+
+idea :- for each house , you decide to pick it i and skip it i - 1;
+
+1. pick house = dp[i-2]
+2.skip house = dp[i-1]
+
+=================================CODE===============================
+
+function sticklerThief(arr){
+    let n = arr.length;
+    if(n === 0) return 0;
+    if(n === 1) return arr[0];
+
+    let prev2 = arr[0];                        //pick a house 
+    let prev1 = Math.max(arr[0],arr[1]);        //skip a house 
+
+    for(let i =2;i < n; i++){
+        let current = Math.max(arr[i] + prev2,prev1);      //dp[i];
+        prev2= prev1;                                     //move window forward
+        prev1  = current;
+    }
+    return prev1;                     //maximum money that can be stolen
+}
+
+
+Question is Jump Game :(Greedy Approach)
+
+Input: nums = [2, 3, 1, 1, 4]
+Output: true
+Explanation: We can jump from index 0 to index 2, if you can reach last index = true , otherwise false 
+
+Steps:-
+
+1. track the maximum reachable index from start
+2. at every index , if you are still within reachable zone
+3.if, any point , exceeds the fartheset you go , return falsee 
+
+
+=======================================CODE============================
+
+
+fucntion canJump(nums){
+    let maxReach = 0;
+
+    for(let i =0;i <nums.length; i++){
+        if(i> maxReach) return false;      //stuck
+        maxReach = Math.max(maxReach, i + nums[i]);
+    }
+    return true;
+}
+
+
+Question is total decoding messages :- 
+
+Input: s = "12"
+Output: 2
+Explanation: "12" can be decoded as "AB" (1,2) or "L" (12)
+
+========================CODE================================
+
+fucntion numDecodings(s){
+    if(!s || s[0] === '0') return 0;
+
+    const n = s.length;
+    const dp = new Array(n+1).fill(0);
+    dp[0] = 1; //empty string
+    dp[1] = 1;   //valid digit 
+
+
+    for(let i =2; i <= n ;i++){
+        let oneDigit = parseInt(s.slice(i - 1,i));
+        let twoDigit = parseInt(s.slice(i - 2, i));
+
+        if(oneDigit >= 1){
+            dp[i] += dp[i-1];                //valid digit betn 1 to 9 
+        }
+
+        if(twoDigit >= 10 && twoDigit <= 26){
+             dp[i] += dp[i -2];       //valid digit between 10-26
+        }
+    }
+
+    return dp[n];
+}
+
+Question is on special keyboard:i-1
+
+we have print a on screen , ctrl +a , ctrl + c , ctrl + v
+you can press any key N times , find how many times you can print A using exactly 
+n keystrokes 
+
+Input: N = 7
+Output: 9
+Explanation:
+Press: A, A, A, Ctrl-A, Ctrl-C, Ctrl-V,
+      Ctrl-V → "AAA" → Select + Copy → Paste → Paste → "AAAAAAAAA"
+
+dp[j] * (i - j -1)
+
+
+=============================CODE========================
+
+
+function maxA(N){
+    const dp = new Array(N+ 1).fill(0);
+
+    for (let i = 0 ; i <= N ; i++){
+        //case1: press a
+        dp[i] = dp[i-1]+1;
+
+        //case2 :try using copy paste sequence
+
+        for (let j = 2;j<i;j++){
+
+            //at step j : ctrl a +ctrl c(2 steps)
+            //remaining (i-j) steps are used for ctrl val
+
+            dp[i] = Math.max(dp[i],dp[j-2] * (i - j + 1));
+        }
+    }
+
+    return dp[N];
+}
+
+
+Question is Coin Change:-(Unbounded Knapsack)
+
+coins = [1, 2, 3], amount = 4
+
+Output: 4
+
+Explanation:
+The 4 combinations are:
+1. 1+1+1+1  
+2. 1+1+2  
+3. 2+2  
+4. 1+3
+
+dp[i] -> number of ways to make amount i 
+dp[0] = 1 // way to make amount 0 by choosing nothing\
+
+
+
+=========================CODE============================
+
+function coinChange(coins,amount){
+    const dp = new Array(amount + 1).fill(0);
+    dp[0] = 1;
+
+    for (let coin of coins){
+        for (let i = coin; i <= amount; i++){
+            dp[i] += dp[i-coin];
+        }
+    }
+
+    return dp[amount];
+}
+
+
+Question is Number of Coins (Unbounded Knapsack)
+it is same as coin change , but instead of fincidng number of ways , we are fincidng
+min num of coins needed to mek given amount
+
+coins = [1, 2, 5], amount = 11
+
+Output: 3
+Explanation: 5 + 5 + 1 = 11
+
+
+==========================CODE==================
+
+function minCoins(coins,amount){
+    const dp = new Array(amount + 1).fill(Infinity);
+    dp[0] =0;
+
+    for(let coin of coins){
+        for(let i = coin;i <= amount;i++){
+            dp[i] = Math.min(dp[i],dp[i-coin] + 1);         //including current coin leads to better smaller amount
+        }
+        }
+        return dp[amount] === Infinity  ? -1 :dp[amount];
+    }
+}
+
+
+Question is Longest Common Subsequence(DP):i-1
+
+text1 = "abcde"
+text2 = "ace"
+
+Output: 3
+Explanation: The LCS is "ace"
+
+dp[i][j] = length of LCS betn 
+
+if characters match , dp[i][j] = 1 +dp[i-1][j-1]
+else dp[i][j] = Math.max(dp[i-1][j],dp[i],[j-1])
+
+base case = string is empty = 0
+
+============================CODE=====================
+function longestCommonSubsequence(text1, text2) {
+    const m = text1.length;
+    const n = text2.length;
+    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (text1[i - 1] === text2[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+
+    return dp[m][n];
+}
+
+
+
+Question is Longest Common Substring(DP):i-1
+
+s1 = "abcde"
+s2 = "abfce"
+
+Output: 2
+Explanation: Longest common substring is "ab"
+
+===========================CODE=====================================
+
+function longestSubstring(s1,s2){
+    const m = s1.length;
+    const n = s2.length;
+    let maxLen = 0;
+
+    const dp = Array.from({length: m + 1},() => Array(n+1).fill(0));
+
+    for(let i = 1; i <= m;i++){
+        for(let j = 1; j <= n;j++){
+            if(s1[i-1] === s2[j-1]){
+                dp[i][j] =dp[i-1][j-1] + 1;
+                maxLen = Math.max(maxLen,dp[i][j]);
+            }else{
+                dp[i][j] = 0;    //break the streak;
+            }
+    }
+}
+return maxLen;
+}
+
+
+Question is Edit Distance:i-1
+minimum number of operations requires to convert word1 into word2
+
+allowed opeartions:
+insert , delete, replace character
+
+Input: word1 = "horse", word2 = "ros"
+Output: 3
+
+Explanation:
+horse -> rorse (replace 'h' with 'r')
+rorse -> rose (remove 'r')
+rose -> ros (remove 'e')
+
+we have dp[i][j] = min operations to convert first i char to first j char of word2
+
+=========================CODE============================
+
+function minDistance(word1,word2){
+    const m = word1.length;
+    const n = word2.length;
+    const dp = Array.from({length: m + 1}, () => Array(n+1).fill(0));
+
+    for(let i =0;i<=m;i++){
+        for(let j = 0;j<=n;j++){
+            if(i === 0){
+                dp[i][j] = j;
+            }esle if(j === 0){
+                dp[i][j] = i;
+            }else if(word1[i-1] === word2[j-1]){
+                dp[i][j] = dp[i-1][j-1];
+            }else{
+                dp[i][j] = 1+ Math.min(
+                    dp[i-1][j],           //delete
+                    dp[i],[j-1],         //insert
+                    dp[i-1][j-1]     //replace
+                );
+            }
+    }
+}
+return dp[m][n];
+}
+
+
+
+question is word break
+
+Input: s = "leetcode", wordDict = ["leet", "code"]
+Output: true
+
+Explanation: "leetcode" can be segmented as "leet code"
+
+STEPS:-
+1.Create a Set from wordDict for O(1) lookups.
+2.Create a dp array of size s.length + 1 initialized to false.
+3.dp[0] = true → empty string is always breakable.
+4.For each position i from 1 to s.length:
+ For each j from 0 to i:
+    Check if dp[j] === true and s[j...i-1] is in the dictionary.
+    If yes, set dp[i] = true.
+
+
+===================CODE======================
+
+function wordBreak(s, wordDict){
+    const set = new Set();
+    const dp = new Array(s.length + 1).fill(false);
+    dp[0] = true;
+
+    for (let i = 1;i <=s.length;i++){
+        for (let j = 0;j < i;j++){
+            if(dp[j] && set.has(s.substring(j,i))){
+                dp[i] = true;
+                break;
+            }
+    }
+}
+return dp[s.length];
+}
+
+Question is Longest Palindromic Subsequence :
+
+A subsequence is a sequence that can be derived by deleting some character
+s without changing the order of the remaining characters.
+
+Input: "bbbab"
+Output: 4
+
+Explanation: The longest palindromic subsequence is "bbbb"
+
+=========================CODE================================
+
+fucntion longestPalindromicsubseq(s){
+    const n = s.length;
+    const dp = Array.from({length: n},() => Array(n).fill(0));
+
+    for(let i =0;i<n;i++){
+        dp[i][i] = 1;          //every chr is pali. of length 1
+    }
+
+
+    //Traverse substring of increasing length
+
+    for(let cl =2;cl <= n;cl++){
+        for( let i =0; i <= n - cl;i++){
+             let j = i + cl - 1;
+             if(s[i] === s[j]){
+             dp[i][j] = cl === 2 ?2 : 2 + dp[i+1][j-1];
+            }else{
+                dp[i][j] = Math.max(dp[i+1][j], dp[i][j-1]);
+            }
+        }
+    }
+    return dp[0][n -1];
+}
+
+
+Question is Stock Buy and Cell :-
+
+Input: prices = [7, 1, 5, 3, 6, 4]
+Output: 5
+
+Explanation:
+Buy on day 2 (price = 1) and sell on day 5 (price = 6), 
+profit = 6 - 1 = 5
+
+1. track min price so far 
+2. at each step , calculate profit if sold tofday -> curr.price - min price
+3.keep track of maxi profit across all days 
+
+=========================CODE=============================
+
+function maxProfit(prices){
+    let minPrice = Infinity;
+    let maxProfit = 0;
+
+    for (let price of prices){
+        if(price < minPrice){
+            minPrice = price;
+        }else{
+            maxProfit = Math.max(maxProfit, price - minPrice);
+        }
+    }
+    return maxProfit;
+}

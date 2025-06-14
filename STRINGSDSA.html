@@ -33,3 +33,183 @@ function isSubSequence(s1,s2,m,n){
     }
 return true; -->
 
+
+Question:- Roman Number to Integers  O(Hashing)
+check: curr. value < next value , if so curr.value - next value = add result(total)
+
+function RomanInterval(s){
+    const romanMap = {
+        "I":1, "V":5, "X":10, "L":50, "C":100,"D":500,"M":1000
+    };
+
+    let res = 0;
+
+    for(let i =0;i < s.length; i++){
+        //use our condition
+
+        if(i + 1 < s.length && romanMap[s[i]] < romanMap[s[i]])
+
+        res += romanMap[s[i + 1]] -romanMap[s[i]];
+
+        //skip the next symbol 
+
+        i++;
+    }
+}else{
+    res += romanMap[s[i]];
+}
+}
+return res;
+}
+
+//Validate an IP address(Hasmap or Looping):=--
+const validIp = function (queryip1){
+    const ipv4 = () => {
+        const address = queryip1.split('.');
+        if(add.length !== 4) return null;
+
+        for(const str of address){
+            const ip = parseInt(str);
+            if(ip<0 || ip>255) return null;
+                if(ip.toString() !== str) return null;
+        }
+        return 'IpV4';
+};
+
+//same for ipv6
+
+const config = "013536738abcdeABCDE";
+const check = address.every(str => {
+    if( str === '' || str.length > 4) return false;
+    for(const s of str){
+        if(!config.includes(s)) return false;
+    }
+    return true;
+});
+return check ? 'IpV6' : null;
+};
+return IpV4() ??ipV6() ?? 'Neither';
+
+
+//String to Integer ( iMPLEMENT ATOI):-
+
+var my Atoi = fucntion(s){
+    S = s.trim();
+    if(s.length === 0)return 0; //base case to stop , no need to go further 
+
+    let sign = 1, i = 0 , res = 0;
+    if(s[i] === '-'){
+        sign = -1; i++;
+    }else if (
+        s[i] === '+') {
+            i++;
+        }
+
+        while(i < s.length && s[i] >= '0' && s[i] <= '9'){
+            res = res * 10 +(s[i] - '0');
+
+            if(sign * res > 2**31 -1) return 2**31 - 1;
+            if(sign * res < -(2**31)) return -2**31;
+            i++;
+            return sign * res;
+        };
+    
+}
+
+//Check if string is rotated by two places :- 
+ip = str1 = "amazon ", str2="azonam"
+
+
+function rotateLeft(str){
+    str = str.substr(2) + str.substr(0,2);
+    return str;
+}
+function rotateRight(str){
+    let len = str.length;
+    str = str.substr(len ) + str.substr(0,len-2);
+    return str;
+}
+function compare(ste1,str2){
+    if(str.kength !== str2.length) return false;
+}
+
+let l_str = rotateLeft(str1);
+let r_str = rotateRight(str1);
+if(r_str === str2 || l_str === str2){
+    return true;
+} else{
+    return false;
+}
+
+if(compare(str1,str2)){
+    console.log(yes it can be done);
+}else{
+    console.log("it cant be done");
+}
+
+Question : - length of longest substring without repeating characters
+//use hastable to traverse and add letters ,
+
+
+var lengthoflongestsubstring = function(s){
+    let set = new Set();
+    let left = 0 ;
+    let maxSize = 0;
+
+    if(s.length === 0) return 0;
+    if(s.length === 1) return -1;
+
+    for (let i = 0; i < s.length; i++){
+        while(set.has(s[i])){
+            set.delete(s[left])     //if letter exists , delete left index 
+            left++;
+
+        }
+        set.add(s[i]);
+        maxSize = Math.max(maxSize, i - left + 1)    //newsize
+    }
+    return maxSize;
+}
+
+Question is Look and Ray sequence (Frequency Count Method)
+//remove minimum of two characters sop that two strings become anagram
+
+var minSteps = function(s,t){
+    let count = new Array(26).fill(0);
+    for(let i = 0; i<s.length; i++){
+        count[s[i].charCodeAt(0) - 'a'.charCodeAt(0)]++;
+        count[t[i].charCodeAt(0) - 'a'.charCodeAt(0)]++;
+    }
+
+    let sum = 0;
+    for(let n of count){
+        if(n>0){
+            sum = sum + n;
+        }
+    }
+    return sum;
+}
+
+//Permutation of Given String :-(Using Recursion & Divide and Conquer)
+
+s= "ABC"  op = abc, acb, bac,bca,cab,cab
+
+const permutations = arr => {
+    if(arr.length <= 2) return arr.length === 2 ? [arr,[arr[1],arr[0]]] :arr;
+
+    return arr.reduce(
+        (acc,item,i) => acc.concat().join()
+
+        const stringper = str => {
+            if(str.length <= 2) return str.length === 2? [str,str[1] +str[0]] :[str];
+            return str .split(''.reduce(
+                (arr,letter,i) => acc.concat(
+
+
+                )
+            ))
+        }
+    )
+}
+
+

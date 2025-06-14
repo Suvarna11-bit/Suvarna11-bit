@@ -1,0 +1,193 @@
+question is check for balanced brackets ( push opening and pop for matching and closing and LIFO)
+
+i/p = s = "[({})]"
+o/p== true  (because opening and closing brackets are matching)
+
+1. traverse - if opening braclet - push to stack 
+2. if closing matches opening , -> pop opening bracket 
+3. else it is not balanced
+
+function isBalanced(s){
+    let stack = [];
+    fir (let i =0;i<s.length;i++){
+        if(s[i] ==='[' ||s[i] === '(' || s[i] === '{'){
+            stack.push(s[i]);
+        }else{
+            if(st.length > 0 &&
+             ((stack[stack.length - 1] === '(' && s[i] === ')') ||
+             (stack[stack.length - 1] === '{' && s[i] === '}') ||
+             (stack[stack.length - 1] === '[' && s[i] === ']'))) {
+                stack.pop();
+             }else{
+                return false;
+             }
+        }
+    }
+    return stack.length === 0;
+}
+
+question is next greater element (monotonic stack pattern)LIFO
+
+1. traverse the array from right to left
+2. for each element , we remove amller than or equal elements from stack as they cannot be largest elment
+3. if stack is not empty , top elemnet of stack is next greater element 
+4. we then push current element into the stack .
+
+i/p = arr [] = [1,3,2,4]
+o/p = [3,4,4,-1] (because 1 -> 3, 3->4 2->4,4->-1)
+
+
+====CODE=====
+
+function largestelement(arr){
+     let n = arr.length;
+     let res = new Array(n).fill(-1);
+     let stack = [];
+
+//traversing from right to left 
+     for(let i =n-1;i>=0;i--){
+
+
+//pop elements from the stack that are less than or equa; to current element
+       while(stack.length > 0 && stack[stack.length -1] <= arr[i]){
+        stack.pop();
+       }
+
+//oif stack is not empty , top elemnet is the next larger elment
+ if(stack.length >0 ){
+    res[i] = stack[stack.length -1];
+ }
+
+ stack.push(arr[i]);
+     }
+     return res;
+
+}
+
+
+question is  Oueue using two stacks(one stack and recursion)
+
+stack - LIFO , queue - FIFO
+
+a. pusg elment x => stack1
+b. stack1 empty , return error
+c.stack1 - only 1 element and then return it 
+d. otherwise recursively pop all elments from stack1 and 
+store that popped ---> res ,res ===> stack1 , 
+e. return result
+
+
+class Queue{
+    constructor(){
+        this.s = [];
+    }
+
+    //enequeue
+    enqueue(x){
+        this.s.push(x);
+    }
+
+    dequeue(){
+        if(this.s.length === 0){
+            return -1;
+    }
+
+    //pop an item from the stack
+    let x = this.s[this.s.length -1];
+    this.s.pop();
+}
+
+if(this.s.length === 0)
+return x;
+
+let item = this.dequeue();
+
+this.s.push(x);
+
+return item;
+}
+}
+
+
+
+//Sort a stack using recursion 
+
+i/p = -3 14 18 -5 30 
+o/p = 30 18 14 -3 -5   (now stack is sorted )
+
+base case : it stack is empty , return 
+a. remove top elment , recursively sort the rem stack
+b.use temp stack = elemnts > popped element
+c.push pop element back intp stack 
+d. push all elements from temp stack into the stack
+
+===========CODE==========
+
+fucntion sortStack(stack){
+ if(stack.length === 0) return;
+ let top = stack.pop();
+
+ sortStack(stack);
+
+ let tmp = [];
+
+ while(stack.length > 0 && stack[stack.length -1] > top){
+    tmp.push(stack.pop());
+ }
+
+ stack.push(top);
+
+ while(tmp.length > 0){
+    stack.push(tmp.pop());
+ }
+}
+
+while(stack.length > 0){
+    console.log(stack.pop());
+ }
+
+
+question is the celebrity problem (Two Pointers)
+
+input: mat[][] =[[1,1,0],
+                 [0,1,0],
+                 [0,1,1]]
+output : 1 
+explaination :- o and 2 person both know 1 , therefore 1 is the celebrity
+
+
+Create two indices i and j, where i = 0 and j = n-1
+Run a loop until i is less than j.
+Check if i knows j, then i can’t be a celebrity. so increment i, i.e. i++
+Else j cannot be a celebrity, so decrement j, i.e. j–
+Assign i as the celebrity candidate
+Now at last check whether the candidate is actually a celebrity by
+ re-running a loop from 0 to n-1  and constantly checking if the candidate knows a person or if there is a candidate who does not know the candidate.
+Then we should return -1. else at the end of the loop, we can be sure that the candidate is actually a celebrity.
+
+
+function celebrity(mat){
+    let n = mat.length;
+
+    let i =0,j = n-1;
+    while(i<j){
+        if(mat[j][i] === 1)
+        j--;
+    else 
+        i++;
+    }
+    let c =i;
+
+    for(let i =0;i<n;i++){
+        if(i === c) continue;
+
+        if(mat[c][i] || !mat[i][c])
+        return -1;
+    }
+    return c;
+}
+
+
+
+
+

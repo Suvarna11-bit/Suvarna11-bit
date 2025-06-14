@@ -1,0 +1,266 @@
+question is we want to sort an array of 0s,1s, and 2s (Three Pointers)
+
+i/p = arr= [0,1,2,0,1,2]   o/p = [0,0,1,1,2,2]  
+
+1. basic condition = l = 0 , h = 0 , 
+   a. if arr[0] to arr [0-1]  --zerores
+   b. arrl + arr mid-1  - ones 
+   c.arr h+1 = arr n-1 - twos
+
+   reveerse array till mid  <= h1
+
+   funtion sort012(arr){
+    let l = o;
+    let h = arr.length -1;
+    let mid = 0;
+
+
+    //iterate till all elements are sorted 
+       while(mid <= h){
+        if(arr[mid] === 0){
+            [arr[l],arr[mid]]  = [arr[mid],arr[l]];   // swapping zeroes 
+            l++;                   // increment mid by 1 
+            mid++;
+        }
+
+        else if(arr[mid] === 1){
+            mid++;                                 //move to next elemnt and and increment mid by 1 
+        }else{                                            //if(arr[mid] === 2 )
+           [arr[mid],arr[h] = [arr[h],arr[mid]];
+           h--;                                      //twos are h+1 to n -1 
+        }
+        }
+       }
+
+
+
+//question is kth largest(or smallest) elements in array (Priority Queue, heap):-
+
+tip = all this largest elment should be in decreasing order 
+
+i/p = [1,23,12,9,30,2,50]  o/p = [50,30,23] k =3 
+
+//ietrate over each element and keep track of them k elements - stored in min heap and then compare it with topelement of heap which is genrally smallest 
+
+a. current element > top (smallest element)
+b.then remove top and insert curr element that is our largest element 
+c. after all heap will have only largest elments 
+
+CODE=======================
+function klargest(arr,k){
+   let minHeap = new MinHeap();
+   for (let i =0;i<k;i++){
+    minHeap.push(arr[i]);
+   }
+//traverse n-k elements 
+
+    for(let i =k;i<arr.length;i++){
+//go for a condition 
+      if(minHeap.top() < arr[i]){
+        minHeap.pop();
+        minHeap.push(arr[i]);
+      }
+    }
+    let res = 0;
+//min heap will only contain now largest elements 
+      while(!minHeap.empty()){
+        res.push(minHeap.pop());
+      }
+//revers the heap so we get elements in only decreasing order 
+    result.reverse();
+    return result;
+}
+
+
+
+qyestion is of quick sort (Divide and Conquer ):-
+
+i/p = [10,7,8,9,1,5]
+//start from left element - kep index of smaller (or equal) element 
+or if find smaller then ,arr ->arr[i] , otherwise ignore 
+
+function partition(arr,low,high){
+//choose the pivot 
+   let pivot = arr[high];
+
+//index of smaller element and indicates right position of pivot found 
+
+let i = low -1;
+
+ //traverse arr low ...high and indicate right position of pivot found
+
+   for (let j = low,j <= high -1;j++){
+    if(arr[i] < pivot ){
+        i++;
+        swap(arr,i,j);
+    }
+   }
+//move pivot after smaller element return its position
+   swap(arr,i+1,high){
+    return i+1;
+   }
+   function swap(arr,i,j){
+     let temp = arr[i];
+     arr[i] = arr[j];
+     arr[j] = temp;
+   }
+
+   //quick sort implementation
+
+   function quicksort(arr,low,high){
+    if(low < high)
+//pi is partition index of pivot 
+
+     let pi = partition(arr,low,high);
+
+//recursion calls for smaller elem. and greater as equal element.
+
+quicksort(arr,low,pi -1);
+quicksort(arr,pi + 1,high);
+   }
+}
+quicksort(arr,0,n-1);
+
+
+
+
+//Heap sort(comparison based on sorting technique)
+generally use binary heap -> to quickly find and move the max element
+i/p = [9,4,3,8,10,25]
+basic rule = max heap > child nodes 
+
+function heapsort(arr){
+    let n = arr.length;
+
+    //build max heap 
+
+    for (let i = Math.floor(n/2)-1;i >= 0;i--){
+        heapify(arr,i,n);
+    }
+
+//extract the elements one by one from heap
+    for(let i = n-1;i>0;i--){
+        //swap current root (max element) with last element
+
+        [arr[0],arr[i]] = [arr[i],arr[0]];
+
+        //heapify the reduced heap
+        heapify(arr,0,i);
+    }
+    return arr;
+}
+
+
+//Helper function to heapify a subtree rooted at index i--
+function heapify(arr,n,i){
+    let largest = i;
+    let left = 2 * i + 1;
+    let right = 2 * i + 2;
+
+    if(left < n &&arr[left] > arr[largest]) {
+        largest = left;
+    }
+    if(right < n &&arr[right] > arr[largest]) {
+        largest = right;
+    }
+    if(largest !== i){
+        [arr[i],arr[largest]] = [arr[largest],arr[i]];
+        heapify(arr,n,largest);
+    }
+}
+
+
+question is merge 2 sorted arrays without using extra space
+
+i/p = arr1 = [1,4,7,8,10] arr2 = [2,3,9]
+after o/p = arr1 =[1,2,3,4,7]  arr2 =[8,9,10]
+
+//treat both arrays as combined one in size n + m
+//comapre elements at index i and i + gap 
+//swap if needed to maintain sorted order 
+//keep reducing gap until it becomes zeroe
+
+fucntion merge(a,b){
+    let n = a.length;
+    let m = b.length;
+    let gap = Math.floor((n+m-1)/2);
+
+    while(gap > 0){
+        let i = 0;    //left
+        let j = gap;   // right
+        while(j<n+m){    //right is less than that of combine length
+
+//if both pointers are in first array a[] if left>right ,swap
+
+        if(j<n && a[i]>a[j]){        
+            [a[i],a[j]] = [a[j],a[i]];
+        }
+
+//1 pointer in a[i] -> left  b[] ->right
+
+       else if(i<n && j>=n && a[i] >b[j-n]){
+        [a[i],b[j-n]] = [b[j-n],a[i]];
+    }
+//both pointers in second array b   left > right-n (swap)
+
+   else if[i >= n && b[i-n] > b[j-n]]{
+    [b[i-n],b[j-n]] =[b[j-n],b[i-n]];   //left,right = right,left
+   }
+   i++;        
+   j++;
+        }
+
+//after operating gap of 1, break the loop ,
+
+if(gap===1) break;
+gap = Math.floor((gap+1)/2);       //gap should be zero
+    }
+
+}
+
+
+
+//Merge platforms required for given arraival and departure times (2 pointer +  sorting)
+
+i/p = arr[] = [900,940,950,1100,1500,1800],
+dep[] = [910,1200,1120,1130,1900,2000]
+o/p = 3 (3 trains between 9:40 to 12:00)
+
+
+note :- first sort the arr and then traverse through them 
+a. current train arrives before departure of earlier -- allocate new platform 
+b. if arr > departure , platform fleeing dep ===> j++;
+c. update max platforms 
+d. continue until all trains are processed.
+
+
+=====================CODE===========
+
+function minplatfoms(arr,dep){
+    let n = arr.length;
+    let res = 0;
+
+//sort the arrays
+     arr.sort((a,b) => a+b);
+     dep.sort((a,b) => a+b);
+
+     //pointer to track the items 
+     let j = 0;
+
+//track the number of platforms needed at any given time 
+
+let cnt = 0;
+
+//check for each train 
+for(let i =0;i<=n;i++){
+    //decrement count if other trains have left 
+    while(j<n && dep[j] < arr[i]){
+cnt--;
+j++;
+    }
+    //one platform for current train
+    cnt++;
+    res = Math.max(res,cnt);
+}
+return res;
+}

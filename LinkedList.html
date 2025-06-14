@@ -1,0 +1,116 @@
+Linked list is linear data structure but store data in non contiguous locations and has head , tail , head as data and tail is next is null
+
+
+Question :- Reverse a Linked list
+
+ip = [1,2,3,4,5]  o/p = [5,4,3,2,1]
+
+class Solution{
+    reverseList(head){
+        let prev = null;
+        let next = head;
+
+        while(curr !== null){
+            let next = curr.next;
+            curr.next = prev;
+
+            prev = curr;
+            curr = next;
+        }
+
+        return prev;
+    }
+}
+
+Question:- Detect and Remove Loop in Linked list:-(2 pointers 1 - slow and 1 fast)
+
+given - head of ll , return node where cycle begins and no cycle and return null
+
+ip = [3,2,0,-4] pos = 1   , taiconnectes to node at index 1 
+
+var detectCycle = fucntion(head){
+    var p1= head, p2=head;
+
+    while(p2 != null && p2.next != null){
+        p1 =p1.next;
+        p2 =p2.next.next;
+
+        if(p1 == p2) break;
+    }
+    if(p2 == null || p2.next == null) return null;
+
+    while(head != p1){
+        head = head.next;   //run condition until head and p1 dont collab
+        p1= p1.next;         //movimg both by 1
+    }
+    return head;
+}
+
+question is nth node from end of linked list (2 pointer )
+
+fast.next == null;(exit condition )
+
+
+var removenthfromEnd = fucntion(head,n){
+    let fast = head , slow = head  
+    for(let i =0;i<n;i++){
+        fast = fast.next;         (0->1)
+    }
+    if(!fast) return            //if not fast 
+    head.next
+    while(fast.next) fast = fast.next,slow = slow    //2 loop
+    slow.next = slow.next.next            //increase slow by 2 
+    return head;
+}
+
+
+question is add two numbers seperated by ll (carry problem)  (using pointer )
+
+
+var addTwonumbers = function(l1,l2){
+    let dummy = new Map();
+    let temp = dummy;
+    let carry = 0;
+
+    while (l1 !== null || l2 !== null || carry !== 0){
+        let val1 = l1 !== null ? l1.val:0;
+        let val2 = l2 !== null ? l2.val:0;     //if value is not there then take null
+
+        let sum = val1 + val2 + carry;
+        carry = Math.floor(sum/10);
+        temp.next = new ListNode(sum %10);       //carry quotient to next sum and store in temp , result 
+        temp = temp.next;
+
+
+        if(l1 !== null) l1 = l1.next;            //carry forward the next node 
+        if(l2 !== null) l2 = l2.next;   
+    }
+
+    return dummy.next;
+}
+
+
+question is cloned a linked list with random pointer (Interweave Nodes)
+//insert duplicate after each orignial node , and construct a deep copy so any changes done to new will not affect original \
+
+copy randomList = fucntion(head){
+    if(!head){                                       //if list is empty
+        return null;
+    }
+    const clones = new Map();
+    let n = head;
+    while(n){
+        clones.set(n,new Node(n.val));      // by making new node with same value 
+        n = n.next;
+    }
+    n = head;
+    while(n){
+        clones.get(n).next = clones.get(n).next || null;          //connecting cloned node next and random pointer 
+        clones.get(n).random = clones.get(n).random || null;      //connecting cloned nod
+        n = n.next;
+    }
+    return clones.get(head);
+}
+
+
+

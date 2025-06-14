@@ -1,0 +1,744 @@
+question is height of binary tree:-(dfs + recursion)
+
+number of the edges on longest path from root node to leaf tree 
+a. if tree has only one node , height is 0;
+b. empty tree has height = -1 
+
+height = 1+ max(leftHeight, rightHeight)
+i/p =    1              1->2-4      o/p = 2
+       / \
+      2   3
+     /
+    4
+
+
+    class Node {
+        constructor(data){
+            this.data = data;
+            this.right = null;
+            this.left = null;
+        }
+    }
+
+    function heightofbinarytree(root){
+        if(root === null){
+            return -1;     // base case 
+        }
+
+        const leftHeight = heightofbinarytree(root.left);
+        const rightHeight = heightofbinarytree(root.right);
+
+        return 1 + Math.max(leftHeight,rightHeight);
+    }
+
+
+
+question is reverse level order traversal :---
+visit the nodes of binary tree from bottom to top , level by level
+from left to right
+
+i/p     1             level order - 1->2-3-4-5    reverse =>4-5-2-3-1
+       / \
+      2   3
+     / \
+    4   5
+
+    q. will need queue (to traverse level by level)
+    b. stack to reverse the order of nodes
+    c. enequee right child before left child to ensure left comes first while popping the stack
+    d.push each visited node to stack
+    e.finally pop everything from stack to get reverse level order
+
+
+
+    ==============CODE===========
+
+    class Node{
+        costructor(data){
+            this.data =data;
+            this.left = null;
+            this.right = right;
+        }
+    }
+
+    function reverselevelorder(root){
+        if(!root) return [];
+
+        let queue = [root];
+        let stack = [];
+
+
+        while(queue.length > 0){
+            let current = queue.shift();
+
+            stack.push(current.data);
+
+            //enequeue right  before left
+
+            if(current.right) queue.push(current.right);
+            if(current.left) queue.push(current.left);
+
+        }
+
+        //reverse the stack for result 
+        let result = [];
+        while(stack.length > 0){
+            result.push(stack.pop());
+        }
+        return result;
+    }
+
+
+question is left view of binary tree (BFS (LEVEL ORDER TRAVERSAL)
+
+left view is node visible on left side 
+at each level , we pick the first node we encounter on left side 
+
+i/p      1        o/p = 1-2-4-7
+       /   \
+      2     3
+     / \     \
+    4   5     6
+         \
+          7
+
+
+==============CODE==========
+
+
+function leftView(root){
+    if(!root) return [];         ///base case
+
+    let result = [];
+    let queue = [root];
+
+    while(queue.length > 0){
+        let levelSize = queue.length;
+
+        for(let i =0;i < levelSize; i++){
+            let node = queue.shift();
+            if(i === 0)  
+            result.push(node.val);       //leftmost node of this level
+
+
+            if(node.left) queue.push(node.left);
+            if(node.right) queue.push(node.right);
+
+        }
+    }
+
+    return result;
+}
+
+
+
+question is right view of binary tree (leve; order traversal + BFS)
+
+its same o/p will be 1-3-6-7
+
+
+===========CODE===========
+
+
+function leftView(root){
+    if(!root) return [];         ///base case
+
+    let result = [];
+    let queue = [root];
+
+    while(queue.length > 0){
+        let levelSize = queue.length;
+
+        for(let i =0;i < levelSize; i++){
+            let node = queue.shift();
+            if(i === levelSize - 1)  
+            result.push(node.val);       //leftmost node of this level
+
+
+            if(node.left) queue.push(node.left);
+            if(node.right) queue.push(node.right);
+
+        }
+    }
+
+    return result;
+}
+
+
+Question is root to leaf path sum :-(DFS+ backtracking)
+
+given - binary tree and target sum , you need to check if there is any existing path
+from the root to any leaf ,
+such that sum of all node values along path = equals to target sum 
+
+i/p      5      target sum = 22  , path found = 5-4-11-2 = 22
+       / \
+      4   8
+     /   / \
+    11  13  4
+   /  \
+  7    2
+
+
+  a. subtract the curent node value from sum 
+  b. move to the left and right child 
+  c.if we hit a leaf and remaining sum is 0 , then return true
+
+  ======================CODE==================
+
+  clas node {
+  }
+
+  function  hasPathSum(root,targetSum){
+
+    if(!root) return false;
+
+    //check if it's a leaf node  
+
+    if(!root.left && !root.right){
+        return root.data === targetSum;
+    }
+
+    //subtract current node value and check in children 
+
+    let remainingsum = targetSum - root.data;
+
+    return hasPathSum(root.left, remainingSum) || hasPathSum(root.right, remainingSum);
+
+  }
+
+
+  //example usage 
+
+  let root = new Node(5);
+root.left = new Node(4);
+root.right = new Node(8);
+root.left.left = new Node(11);
+root.left.left.left = new Node(7);
+root.left.left.right = new Node(2);
+root.right.left = new Node(13);
+root.right.right = new Node(4);
+
+console.log(hasPathSum(root, 22)); // Output: true
+
+
+question is lowest common ancestor of two nodes in binary tree(DFS+ POST ORDER TRAVERSAL)
+
+lca has two nodes n1 and n2 in a binary tree ,
+deepest node has both n1 and n2 as descendants 
+
+i/p:    3            
+       / \
+      5   1
+     / \ / \
+    6  2 0  8
+      / \
+     7   4
+     LCA of 5 and 1 = 3
+
+     LCA of 6 and 4 = 5
+     
+     LCA of 7 and 8 = 3
+
+a. if current node is null,return null 
+b.if current node is p or q , return current node
+c.recursively search left and right subtree 
+d.if both sides return a non-null value , current node is LCA
+
+class nOde{
+}
+
+fucntion lowestcommonancestor(root,p,q){
+    if(root === null || root === p || root === q) return root;
+
+    const left = lowestcommonancestor(root.left,p,q);
+    const right = lowestcommonancestor(root.right,p,q);
+
+    if(left && right) return root;   //both found in different branches
+    return left|| right;             //return  non null child
+}
+
+
+
+example usage ;-
+let root = new Node(3);
+root.left = new Node(5);
+root.right = new Node(1);
+root.left.left = new Node(6);
+root.left.right = new Node(2);
+root.right.left = new Node(0);
+root.right.right = new Node(8);
+root.left.right.left = new Node(7);
+root.left.right.right = new Node(4);
+
+let p = root.left; // Node 5
+let q = root.right; // Node 1
+
+console.log(lowestCommonAncestor(root, p, q).data); // Output: 3
+
+question is check if binary tree is bst or not (INORDERTRAVERSAL with value DFS)
+
+
+a.root.val is within range
+b.all nodes in left subtree are <root.val and vic versa
+
+=========CODE=============
+
+
+function isBST(root, min = -Infinity, max = Infinity){
+    if(!root) return true;
+
+    if(root.val <= min || root.vl >= max ) return false;
+
+    return (
+        isBST(root.left,min,root.val) &&
+        isBST(root.right,max,root.val)
+    );
+}
+
+
+question is kth largest element in a bst (when modification is not allowed)
+(Reverse Inorder traversal  DFS right= root == left)(descending)
+
+tip:- you cn't convert it to an array, modify node structure or tree itself 
+
+1.traverse right subtree
+b.visit current node and increase counter
+if counter === k , store result
+c. traverse left subtree
+
+class Node{
+}
+
+function kthlargest(root,k){
+    let count = 0;
+    let result = null;
+
+    function reverseInorder(node){
+        if(!node || result !== null) return;
+
+        reverseInorder(node.right);
+
+        count++;
+        if(count === k){
+            result = node.data;
+            return;
+    }
+    reverseInorder(node.left);
+}
+
+reverseInorder(root);
+return result;
+}
+
+
+// BST:
+//        50
+//       /  \
+//     30    70
+//    / \    / \
+//  20  40  60  80
+
+let root = new Node(50);
+root.left = new Node(30);
+root.right = new Node(70);
+root.left.left = new Node(20);
+root.left.right = new Node(40);
+root.right.left = new Node(60);
+root.right.right = new Node(80);
+
+console.log(kthLargest(root, 3)); // Output: 60 (3rd largest)
+
+
+question is explain diameter of binary there(DFS postorder)
+
+
+==path should not necessarily pass from the root
+==path with max number of edges, not nodes.
+
+ip=1     longest is 4-2-1-3 edges and diameter is 3
+/ \
+2   3
+/ \
+4   5
+
+a. height of left subtree
+b. height of right subtree 
+c.update the maximum diameter as leftHeight + rightHeight
+
+
+=======CODE============
+
+class Node{}
+
+function diameterofBinaryTree(root){
+    let diameter = 0;
+
+    function height(node){
+        if(!node) return 0;
+
+        const leftHeight = height(node.left);
+        const rightHeight = height(node.right);
+
+        //update the diameter at this node 
+
+        diameter = Math.max(diameter,leftHeight + rightHeight);
+
+        //return height of this node 
+        return 1 + Math.max(leftHeight,rightHeight);
+    }
+    height(root);
+    return diameter;
+}
+
+
+question is zig zag traversal (Level order traversal + BFS )
+
+
+1. traversal from left to right and then right to left 
+2. third level from left to right and so on 
+
+1                      [[1],[3,2],[4,5,6]]  
+/ \
+2   3
+/ \   \
+4   5   6
+
+
+Use a queue to process nodes level by level
+Use a flag (like leftToRight = true/false) to track direction
+Reverse the level array if direction is right to left
+
+================CODE=============
+
+class Node{}
+
+function zigzag(root){
+    const result = [];
+    const queue = [root];
+    let leftToRight = true;
+
+    while(queue.length > 0){
+        const levelSize = queue.length;    // number of nodes at current level
+        const level = [];                  //array to store node values of current level
+
+        for(let i =0;i< levelSize;i++){
+            const node = queue.shift();
+            level.push(node.data);
+
+            if(node.left) queue.push(node.left);
+            if(node.right) queue.push(node.right);
+        }
+
+        //if direction is right to left, reverse the leve; 
+
+        if(!leftToRight) level.reverse();
+
+        result.push(level);
+        leftToRight = !leftToRight;   //toggle direction
+    }
+    return result;
+
+}
+
+
+Question is Boundary Traversal of Binary (BFS+DFS)
+    printing all boundary nodes in anti-clockwise direction 
+
+a.left boundary(excluding leaf nodes)
+b.leaf nodes (left to right)
+c.right boundary(excluding leaf nodes),print in bottom up 
+
+1
+/   \
+2     3
+/ \   / \
+4   5 6   7
+/     \
+8       9
+Output: 1, 2, 3, 4, 5, 7,
+
+a.print root 
+b.print left boundary(top-down, skip leaves)
+c.print all leaf nodes(left to right)
+d.print right boundary(bottom-up,skip leaves)
+
+
+===================CODE=====================
+
+fucntion isLeaf(node){
+    return !node.left && !node.right;
+}
+
+function addLeftBoundary(node,res){
+    let curr = node.left;
+    while(curr){
+        if(!isLeaf(curr)) res.push(curr.data);
+        if(curr.left) curr = curr.left;
+        else curr = curr.right;
+    }
+}
+
+function addLeaves(node,res){
+    if(isLeaf(node)) {
+        res.push(node.data);
+        return;
+    }
+
+    if(node.left) addLeaves(node.left, res);
+    if(node.right) addLeaves(node.right,res);
+}
+
+function addRightBoundary(node,res){
+    let curr = node.right;
+    const temp = [];
+    while(curr){
+        if(!isLeaf(curr)) temp.push(curr.data);
+        if(curr.right) curr = curr.right;
+        else curr = curr.left;
+    }
+
+    //reverse and add to result 
+
+    for(let i = temp.length - 1;i>=0;i--){
+        res.push(temp[i]);
+    }
+}
+
+function boundaryTraversal(root){
+    if(!root) return [];
+
+    const res = [];
+
+    if(!isLeaf(root)) res.push(root.data);
+
+    addLeftBoundary(root,res);
+    addLeaves(root,res);
+    addRightBoundary(root,res);
+
+    return res;
+}
+
+
+question is Construct a bianry tree from (inorder and preorder traversal)
+
+
+preorder : root -left-right
+inorder : left->root->right
+
+1.start with first element in preorder i.e. root
+2.find this root in rder array - helps split into left and right subtrees 
+3.recursively do this for left and right subtrees 
+4. use a pointer (or index) to move through preorder array
+
+Inorder   = [9, 3, 15, 20, 7]
+Preorder  = [3, 9, 20, 15, 7]
+
+
+
+====================CODE======================
+
+class TreeNode{
+    constructor(val){
+        this.val = val;
+        this.left = this.right = null;
+    }
+}
+
+
+funtion buildTree(preorder,inorder){
+    let preIndex = 0;
+    let inOrderMap = new Map();
+
+    //Map value to index for fast lookup 
+
+    for(let i =0;i < inorder.length;i++){
+        inOrderMap.set(inorder[i],i);
+    }
+
+    funtion build(start,end){
+        if(start > end) return null;
+
+        let rootVal = preOrder[preIndex++];           //get rootval from preorder
+        let root = new TreeNode(rootVal);              //create treenode 
+
+        let inIndex = inorderMap.get(rootVal);          //get index of root inorder
+
+        root.left = build(start, inIndex - 1);          //left subtree
+        root.right = build(inIndex + 1, end);           //right subtree
+
+        return root;
+            
+    }
+    return build(0, inorder.length - 1);               //start from full range
+}
+
+//used recursion , hasmap to store indices for fast lookup , preorder index pointer 
+
+
+
+question is convert a binary tree to a doubly linked list(dll)
+
+--we dont want to create new nodes 
+
+1.left pointer acts as previous pointer in DLL.
+2. right pointer acts next pointer in DLL.
+3.tHE DLL should be in order traversal of binary tree .
+
+10
+/  \
+5    20
+   /  \
+  15  30
+0/P = 4-10-15-20-30
+
+1.use inorder traversal to process nodes in correct sequence
+2.keep track of previous visited nodes 
+3.update the current node left to preev and prev.right to current node 
+4.track the haed of dll
+
+
+==============CODE===================
+
+
+function binarytreetoDLL(root){
+    let head = null;
+    let prev = null;
+
+    funtion convert(node){
+        if(!node) return;
+
+        //recurse on left subtree
+
+        convert(node.left);
+
+        if(prev === null){
+
+        //first node visited becomes the head of DLL
+            head = node;
+        }else{
+            //link current node with previous node 
+
+            node.left = prev;
+            prev.right node;
+
+        }
+
+        //update prev to current
+        prev = node;
+
+        //recurse on right subtree
+        convert(node.right);
+    }
+
+    convert(root);
+    return head;
+}
+
+
+question is Construct Tree from Inorder & Preorder()
+
+preorder -> root,-left-right
+inorder = > left ->root->right
+
+1.use a pointer(or index) or preindex to track the current root from preorder
+2.find the root vlue in inorder array to get left/right subtree boundaries
+3.recursively build left and right subtrees.
+
+class Node{}
+
+function buildTree(preorder,inorder){
+    let preIndex = 0;
+    let map =  new Map();
+
+    //build a map of inorder values to indices 
+
+    inorder.forEach((val,idx) => map.set(val.idx));
+
+    function construct(inStart,inEnd){
+        if(inStart > inEnd) return null;
+
+        //step-2 get current root from preorder 
+        const rootVal = preorder[preIndex++];
+        const root = new TreeNode(rootVal);
+
+        //step3: find root in inorder to split
+        const inIndex = map.get(rootVal);
+
+        //step 4:- recursively construct left and right subtrees 
+        root.left = construct(inStart, inIndex - 1);
+        root.right = construct(inIndex + 1, inEnd);
+
+        return root;
+    }
+    return construct(0,inorder.length - 1);
+}
+
+
+//Question is serialize and deserialize a binary tree :---
+
+serialize means (convert tree-> array or string)
+deserialize means (convert array or string -> tree)
+
+1
+/ \
+2   3
+  / \
+ 4   5
+
+
+ Serialized: "1,2,null,null,3,4,null,null,5,null,null"
+(Using preorder + null markers for missing nodes)
+
+how to solve ?
+``````````````````serialization```````````````````````
+1.visit node => save value
+2.if null , save null
+3.recurse left and then right
+`````````````````deserialization``````````````````````
+1.read next value from seialized string
+2. if null return null
+3.else create node , then recursively bind left and right children.
+
+=======================CODE===========================
+
+
+class TreeNode{}
+
+function serialize(root){
+    let result = [];
+
+    function dfs(node){
+        if(!node){                    //vist node , save value 
+            result.push("null");
+            return;                       //null save null
+        }
+        result.push(node.val.toString());
+        dfs(node.left);
+        dfs(node.right);                      //recurse left and then right
+    }
+    dfs(root);
+    return result.join(",");
+}
+
+function deserialize(data){
+    const values = data.split(",");    //read value from serialized string
+    let index = 0;
+
+    function dfs(){
+        if(values[index] === "null"){    //if value is null , return null
+            index++;
+            return null;
+        }
+
+        //else create node , and recurse on left and right childrem 
+
+        const node = new TreeNode(parseInt(values[index++]));
+        node.left = dfs();
+        node.right = dfs();
+
+        return node;
+    }
+    return dfs();
+}
+

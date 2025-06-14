@@ -1,0 +1,405 @@
+Question is Pascal triangle:-(Recursive formula)
+
+==each number is the sum of two numbers directly above it 
+
+Row 0:        1  
+Row 1:       1 1  
+Row 2:      1 2 1  
+Row 3:     1 3 3 1  
+Row 4:    1 4 6 4 1
+
+each row starts and ends with 1.
+every other value is sum of two numbers just above it 
+
+base case if col==0 or col == row, return 1.
+
+=========CODE ========
+function generatePascalTriangle(numRows){
+    const result = [];
+
+    for(let row = 0;row < numRows;row++){
+        result[row] =[];
+        result[row][0] =1;  //first element is always 1 
+
+        for(let col = 0;col< row;col++){
+            result[row][col] = result[row - 1][col -1] + result[row - 1][col];
+        }
+        result[row][row] = 1; // last element is always 1 
+        }
+    }
+
+
+
+question is shuffle integers(Two Pointers):-
+
+rearrange integers randomly 
+
+i/p = [1,2,3,4,5,6] o/p =[1,4,2,5,3,6]   //divide original into 2 
+
+==============CODE===================
+
+
+fucntion shuffle(arr){
+    const n = arr.length;
+    const result = [];
+
+    for(let i =0;i<n;i++){
+        result.push(arr[i]);
+        result.push(arr[i+n]);
+    }
+
+    return result;
+}
+
+
+question is rat in maze-1:-
+
+given n*n maze , 1- open , 0 -blocked   starts at (0,0)  
+find possible paths to reach (N-1,N-1) in all possible directions
+//use backtracking to unmark the visited cell
+
+maze = [                       o/p :- ["DDRDRR", "DRDDRR"]
+  [1, 0, 0, 0],
+  [1, 1, 0, 1],
+  [0, 1, 0, 0],
+  [1, 1, 1, 1]
+]
+
+===================CODE===============
+
+function findPaths(maze, N){
+    const result = [];
+    const visited = Array.from({ length: N},() => Array(N).fill(false));
+
+    //if current cell is inside grid , then its unvisited or unmarked,
+
+    const isSafe = (x,y) => (
+        x >= 0 && x < N && y >= 0 && y < N && maze[X][Y] === 1 && !visited[x][y]
+    );
+
+    const dfs =(x,y,path) => {            //recursive condition , if satisfies then push
+        if(x ===N - 1 && y === N -1){
+            result.push(path);
+            return;
+        }
+
+        //marking visited node as true
+
+        visited[x][y] = true;
+
+        //Down  ===> checking in all  directions
+
+        if(isSafe(x+1,y)) dfs(x+1,y,path+"D")
+        if(isSafe(x,y-1)) dfs(x,y-1,path+" L")
+        if(isSafe(x,y+1)) dfs(x,y+1,path+"R")
+        if(isSafe(x-1,y)) dfs(x-1,y,path+"U")
+
+        //marking visited as non visisted
+
+        visited[x][y] = false;
+        };
+
+        //final result maze is open 
+
+        if(maze[0][0] === 1){
+            dfs(0,0,"");
+        }
+
+return result;
+}
+
+
+
+
+question is Josephus problem :-(Recursive):-
+
+N people are standing in circle to get executed
+.start goes around circle in fixed directions
+b.some people at each stage get skipped and next is executed .
+c.at end, only 1 people remain and that is given freedom
+
+n - total persons , k-1= person skipped , kth person - is one who gets killed in circle 
+
+i/p n =5 , k =2  o/p =3  
+explanation - 4, then 1, then 5, then 2 , so 3 survives 
+
+==================CODE======================
+
+function josephus(n,k){
+    if(n === 1) return 1;
+    else
+      //position returned by josephus(n-1,k) is adjusted because recursive call josephus (n-1,k) original prices.
+
+    return(josephus(n-1,k) + k -1) % n+1;
+
+}
+
+Question is Combination sum(Backtracking):-
+
+
+given i/p : arr = [2,3,6,7] , target = 7
+o/p = [[2,2,3],[7]]
+
+//can use same candidate number of times 
+
+=====pick number , include it or move to next index==
+
+================CODE================
+
+fucntion combinationSum(arr,remSum,curr,res,index){
+    //if remSum is 0 , add combination to result
+    if(remSum === 0){
+        res.push([...curr])
+        return;
+    }
+
+//Invalid :if remsum is less or if index > arr.length
+
+     if(remSum < 0 || index > arr.length)
+     return;
+
+
+     //add curr. lement to combination
+
+     curr.push(arr[index]);
+
+     //recur with same index
+
+      combinationSum(arr,resSum,curr,res,index+1);
+
+      //fucntion to find all combinationSum
+
+      function makeCombination(arr,target){
+        arr.sort((a,b) => a - b);
+
+        //array to store combination 
+        const curr = [];
+
+        //to store validate combiantion 
+
+        const res = [];
+        combinationSum(arr,target,curr,res,0);
+        return res;
+      }
+}
+
+
+//Question is Partititon equal subset sum (DYnamic Programming)
+
+Input: nums = [1, 5, 11, 5]
+Output: true
+Explanation: The array can be partitioned as [1, 5, 5] and [11]
+
+but sum should be even, because if odd can't split into two halves .
+
+1. target = totalSum/2
+2.dp[i] = dynamic array , can we reach sum i using some subset of numbers.
+
+========================CODE========================
+
+function canPartition(nums){
+    let sum = nums.reduce((a,b) => a+b,0);
+    if(sum %2 !== 0) return false;             //if odd
+
+    let target = sum/2;
+    const dp = new Array(target+1).fill(false);
+    dp[0] = true;          // base case , because sum as 0 is always acheivable
+
+
+    for(let num of nums){
+        for (let i = target;i >= num;i++){
+            dp[i] = dp[i] || dp[i-num];
+        }
+    }
+
+    return dp[target];
+}
+
+
+question is n-queen problem (classic backtracking):-blocked
+
+goal is to place n queens on N*N chessboard such that no 2 queens attack each other
+
+no same row, column and diagonal 
+
+[                                   n=4
+  [".Q..",  // 2nd column in 1st row
+   "...Q",  // 4th column in 2nd row
+   "Q...",  // 1st column in 3rd row
+   "..Q."], // 3rd column in 4th row
+
+  ["..Q.",
+   "Q...",
+   "...Q",
+   ".Q.."]
+]
+
+
+//Approach :-
+1.place one queen per row.
+2. use aditional structures to track column and diagonal safely.
+     diag1[] / = index = row+col;
+     diag2[] \ = index = row-col + n - 1;
+
+
+========================CODE===========================
+
+function solveNQueens(n){
+     const solutions = [];
+     const board = Array(n).fill().map(() => Array(n).fill('.'));
+
+     const col = Array(n).fill(false);
+     const diag1 = Array(2 * n -1).fill(false);
+     const diag2 = Array(2 * n - 1).fill(false);
+
+
+     function backtrack(row){
+        if(row === n){
+            //found a solution 
+
+            solutions.push(board.map(r =>r.join('')));
+            return;
+        }
+
+        for(let c = 0;c < n;c++){
+            if(col[c] || diag1[row+c] || diag2[row - c + n-1]) continue;
+
+            //place queen 
+
+            board[row][c] = 'Q';
+            col[c]= diag1[row+c] = diag2[row - c+ n -1] = true;
+
+            backtrack(row+1);
+            //backtrack
+
+            board[row][c] ='.';
+            col[c]= diag1[row+c] = diag2[row - c+ n -1] = false;
+
+        }
+     }
+     backtrack(0);
+     return solutions;
+    }
+
+
+question is solve sudoku :- (Backtracking)
+
+9*9 sudoku grid , goal is to fill empty cells (.)
+column and row contain 1-9 without repetition.
+
+Traverse the board.
+For each empty cell (.):
+Try digits 1 to 9
+If a digit is valid (not present in row, column, or 3x3 box):
+Place it temporarily.
+Recur to fill the rest of the board.
+If recursion leads to a solution, return true
+Else, backtrack (remove the number, try next)
+If no digit is valid, return false to backtrack.
+
+=================Code===============
+
+
+function solveSudoku(board){
+    solve(board);
+}
+
+funtion solve(board){
+    for(let row =0; row < 9;row++){
+        for(let col = 0; col < 9;col++){
+            if(board[row][col] === '.'){
+                for(let num = 1; num <= 9; num++){
+                    const char = num.toString();
+                    if(isValid(board,row,col,char)){
+                        board[row][col] = char;
+                        if(solve(board)) return true;
+                        board[row[col]] ='.';   //backtrack
+                    }
+            }
+            return false;        // if no valid number , trigger backtrack
+    }
+}
+}
+return true;   // board is solveSudoku}
+
+funtion isVlaid(board,row,col,char){
+    for(let i = 0;i<9;i++){
+        //check row and column
+
+        if(board[row][i]  === char || board[i][col] === char) return false;
+
+
+        //check 3* 3 subgrid
+
+        const boxRow = 3*Math.floor(row/3) + Math.floor(i/3);
+        const boxCol = 3*Math.floor(col/3) + i%3;
+        if(board[boxRow][boxCol] === char) return false;
+    }
+    return true;
+}
+
+
+question is find the string in grid :- (DFS+BT+Matrix Traversal)
+
+check if word exists in grid , can move in 8 directions
+a.up,down,left,right and all 4 diagonals
+
+grid = [
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+
+word = "ABCCED"
+
+==============CODE================
+
+function exist(board,word){
+    const rows =board.length;
+    const cols = board[0].length;
+
+    const dfs = (i,j,idx) => {
+        if(idx === word.length) return true;  //full word matched 
+
+        if(
+            i < 0 || i >= rows ||
+            j < 0 || j >= cols ||
+            board[i][j] !== word[idx]
+
+        ){
+            return false;
+        }
+
+        //mark as visited temporarily,
+        const temp = board[i][j];
+        board[i][j] = '#';
+
+        //8 directions 
+        const dirs = [
+        [0, 1], [1, 0], [0, -1], [-1, 0],
+            [1, 1], [1, -1], [-1, 1], [-1, -1]
+        ];
+
+
+        //for rach direction recursively check the next xharacter in the word.
+        for(let [dx,dy] of dirs){
+            if(dfs(i+dx,j+dy,idx+1)){
+                return true;
+            }
+        }
+
+        //backtrack
+        board[i][j] = temp;
+        return false;
+    };
+
+    //start dfs from every cell
+
+    for(let i = 0; i < rows;i++){
+        for(let j = 0; j < cols;j++){
+            if(dfs(i,j,0)) return true;
+    }
+}
+
+return false;
+}

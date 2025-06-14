@@ -1,0 +1,576 @@
+Question is check if 2 strings are k-anagram:-(Map/Array) (Nut and Bolts Pronlem)
+
+Input: str1 = "listen", str2 = "silent"
+Output: true
+
+Input: str1 = "hello", str2 = "world"
+Output: false
+
+===================CODE====================
+
+fucntion areAnagram(str1,str2){
+    if(str1.length !== str2.length) return false;
+
+    const freq = {};
+
+    for(let ch of str1){
+        freq[ch] = (freq[ch] || 0)+ 1;
+    }
+
+    for(let ch of str2){
+        if(!freq[ch]) return false;       //frequency mismatch happens , return false
+        freq[ch]--;
+    }
+
+    return true;
+}
+
+
+question is sort an array according to other (Hashmap+sorting)
+
+A1 = [2, 1, 2, 5, 7, 1, 9, 3, 6, 8, 8]
+A2 = [2, 1, 8, 3]
+
+Output: [2, 2, 1, 1, 8, 8, 3, 5, 6, 7, 9]
+
+You are given two arrays:
+
+A1[] → the array to be sorted
+
+A2[] → the array that defines the sorting order for A1
+
+You need to sort A1 such that:
+The relative order of elements in A2 is maintained.
+The elements not present in A2 are placed at the end in ascending order.
+
+1.count frequency of element a1 ,
+2. add lements from a2 to result, based on order and their frequency in A1
+3. add remaining elements from a1 to result in ascending order
+
+
+========================CODE====================
+
+
+fucntion sortArray(A1,A2){
+    const map = new Map();
+
+//1.count frequencies of A1
+
+    for(let num of A1){
+        map.set(num,(map.get(num) || 0) + 1);
+    }
+
+    const result = [];
+
+//2 add elements in A2 order
+    for(let num of A2){
+        if(map.has(num)){
+            let count = map.get(num);
+            while(count--){
+                result.push(num);
+            }
+            map.delete(num);             //remove processed
+        }
+    }
+
+
+//step3: add remaning elements in sorted 
+    const remaining =[];
+    for(let [num,count] of map.entries()){
+        while(count--){
+            remaining.push(num);
+    }
+}
+
+remaining.sort((a,b) => a - b);
+return result.concat(remaining);
+}
+
+
+
+
+question is smallest distinct video (sliding window + hashmap)
+
+Input:  "aabcbcdbca"  
+Output: "dbca" 
+
+1.count total distinct characters in starings
+2.use sliding window and try to include all distinct characters.
+3.once curr. window has all char. , try to min windlow by sliding left pointer.
+4.keep track of minimum window length.
+
+=======================CODE=====================
+
+function smallestDistinctWindow(str){
+    const n = str.length;
+
+    //step1:count total distinct characters in string
+
+     const set = new Set(str);
+     const totalDistinct = set.size;
+
+     //step2:initialize variables for sliding window and frequency map
+     let map = new Map();
+     let count = 0;
+     let start = 0;
+     let minLen = Infinity;
+     let startIndex = -1;
+
+     //step3: start sliding window
+     for(let end = 0;end < n; end++){
+        let endChar = str[end];
+
+        //add characters to map 
+             map.set(endChar,(map.get(endChar) || 0) + 1);
+
+             //if first time seeing this character, increase count
+
+             if(map.get(endChar) === 1){
+                count++;
+             }
+
+        //try to shrink the window if all distinct chars are included 
+
+        if(count === totalDistinct){
+            //remove extra characters from start of the window
+
+            while(map.get(str[satart]) > 1){
+                map.set(str[start],map.get(str[start]) - 1);
+                start++;
+            }
+
+            //step5:update minimum window length and index
+
+            let windowlen = end - start + 1;
+            if(windowlen < minLen){
+                minLen = windowlen;
+                startIndex = start;
+            }
+        }
+     }
+
+     //rturn the smallest window
+
+     return str.substring(startIndex,startIndex + minLen);
+    }
+}
+
+
+//question is minimum cost of ropes (Greedy algorithm)
+min heap + priority queue
+
+
+i/p = [4,3,2,6]  
+Process:
+Combine 2 + 3 = 5 → cost = 5 → new array: [4, 5, 6]
+Combine 4 + 5 = 9 → cost = 9 → new array: [6, 9]
+Combine 6 + 9 = 15 → cost = 15
+
+Total cost: 5 + 9 + 15 = 29)output
+
+1.combine small ropes first , because large ropes early increases the total cost
+2. use minheap to always extract 2 ropes efficiently
+
+======================CODE======================
+
+class MinHeap{
+    constructor(){
+        this.heap = [];
+    }
+
+    push(val){
+        this.heap.push(val);
+        this.heap.sort((a,b) => a - b );     //simple sort on basis of min heap
+    }
+
+    pop(){
+        return this.heap.shift();
+    }
+    size(){
+        return this.heap.length;
+    }
+}
+
+function minCost(ropes){
+    const heap = new MinHeap();
+
+    for(let rope of ropes ){
+        heap.push(rope);     //insert all rope lengths into min heap
+    }
+
+    let totalCost = 0;
+
+    while(heap.size() > 1){
+        let first = heap.pop();       //smallest rope
+        let second = heap.pop();        //second smallest rope
+
+        let cost = first + second;
+        totalCost += cost;
+        heap.push(cost);            //push the combined rope back into heap
+    }
+    return totalCost;
+}
+
+
+question is K Largest elements :--(minHeap)
+
+Input: arr = [3, 2, 1, 5, 6, 4], k = 2  
+Output: [6, 5]
+
+Iterate through each element:
+
+If heap size < k: push element.
+Else: if current element > min element (heap[0]), pop and push current element.
+At the end, the heap contains the k largest elements.
+
+
+========================CODE============================
+
+function klargestelements(arr,k){
+    const heap = new MinHeap();
+
+    for(let num of arr){
+        if(heap.size() < k){   
+            heap.push(num);
+        }else if(num > heap.peek()){   //curr element > min. element
+            heap.pop();
+            heap.push(num);     // pop and push current element
+        }
+    }
+    return heap.heap.sort((a,b) => b - a);    //descending order
+}
+
+
+Input: [7, 10, 4, 3, 20, 15], k = 3
+
+Heap steps:
+- Add 7 → [7]
+- Add 10 → [7, 10]
+- Add 4 → [4, 10, 7]
+- Now heap = [4, 10, 7]
+- 3 < 4 → skip
+- 20 > 4 → pop 4, push 20 → [7, 10, 20]
+- 15 > 7 → pop 7, push 15 → [10, 15, 20]
+
+Final result: [20, 15, 10]
+
+
+
+question is k element in matrix :-(Min Heap)
+
+n*n matrix , each row and column is sorted in ascending order, return kth 
+smallest element in matrix.
+Input:
+matrix = [
+  [1, 5, 9],
+  [10, 11, 13],
+  [12, 13, 15]
+], 
+k = 8
+
+Output: 13
+
+
+1. start by pushing first element of each row into min heap
+2.pop smallest element from heap and push its next element of same row if exists.
+3. repeat this process k times.
+
+
+============================CODE=============
+
+function kthsmallest(matrix,k){
+    const n = matrix.length;
+    const minHeap = [];
+
+    //push first element of each row into heap 
+
+    for(let i =0; i < Math.min(n,k);i++){
+        minHeap.push({val: matrix[i][0], row: i, col: 0});
+    }
+
+    //min Heap Comparator
+
+    minHeap.sort((a,b) => a.val - b.val);
+
+    let count =0,result;
+
+    while(count < k){
+        const smallest = minHeap.shift(); //extract min
+        result = smallest.val;
+        const r = samllest.row;
+        const c = smallest.col;
+
+        if(c + 1 < n){
+            //push next element from same row 
+
+            const next = {val: matrix[r][c + 1], row: r, col: c+1};
+            minHeap.push(next);
+            minHeap.sort((a,b) => a.val - b.val);     //maintain heap
+        }
+        count++;
+    }
+    return result;
+}
+
+
+Question is nearly sorted :- (Min Heap)
+
+arr= [6,5,3,2,8,10,9] k = 3
+o/p = [2,3,5,6,8,9,10]
+
+steps :- 
+1. create a min heap with k + 1 elements 
+2. for rest of array ,
+    extract the minimum (top of heap) and push the next element from the array
+3. once array is exhausted , pop remaining elemnts from heap .
+
+
+==============================CODE===========================
+
+fucntion nearlySorted(arr,k){
+    const result = [];
+    const minHeap = [];
+
+    //insert first k+1 elements
+    for(let i =0;i<=k && i< arr.length;i++){
+        minHeap.push(arr[i]);
+    }
+
+    minHeap.sort((a,b) => a-b);
+
+    for(let i = k+1;i < arr.length;i++){
+        result.push(minHeap.shift());      //extract min
+        minHeap.push(arr[i]);               //add next element
+        minHeap.sort((a,b) =>  a - b);     //re-heapify
+    }
+
+    //Extract remaining elements
+    while(minHeap.length > 0){
+        result.push(minHeap.shift());
+    }
+
+    return result;
+}
+
+
+question is K Largest element in stream(Min Heap)
+
+//this is how it works :--
+
+Input: stream = [4, 5, 8, 2], k = 3
+Add 3 → [4, 5, 8, 2, 3] → 3rd largest is 4
+Add 5 → [4, 5, 8, 2, 3, 5] → 3rd largest is 5
+
+==top of heap will be k largest element
+
+steps:-
+1. initialize a min heap 
+2.for each incoming number 
+   a. add it to heap
+   b. if size exceeds k , remove small elements (heap.pop()).
+3.root of heap is k largest
+
+
+=============================CODE============================
+
+class Kthlargest {
+    constructor(k,nums){
+        this.k = k;
+        this.minHeap = [];
+
+        for(let num of nums){
+            this.add(num);
+        }
+
+        add(val){
+            this.minHeap.push(val);
+            this.minHeap.sort((a,b) => a -b);   //Min Heap behaviour
+
+            if(this.minHeap.length > this.k){
+                this.minHeap.shift();
+            }
+
+            return this.minHeap[0];    //kth largest in smallest in heap
+        }
+    }
+}
+
+
+question is find median in a stream(Two Heaps)
+
+maxheap(left) = to store smaller  of numbers 
+minheap(*right) = to store larger half numbers
+           //balancing keeps median in  middle
+
+Steps:-
+1. insert a new number 
+   a. if smaller than top of max heap => push to max heap 
+   b.else push -> min heap
+
+2. balance the heaps 
+   max diff in sizes should be at most 1.
+
+3. find median  
+    a. if both heaps are equal in size - median is average of two tops 
+    b.else -> median is top of the heap with more elements 
+
+    i/p = [5,15,1,3]
+    Median after reading 1st element: 5
+Median after reading 2nd element: (5+15)/2 = 10
+Median after reading 3rd element: 5
+Median after reading 4th element: (3+5)/2 = 4
+
+
+==========================CODE======================
+
+class MedianFinder{
+    constructor(){
+        this.minHeap =[];   //right half
+        this.maxHeap =[];    //left half (simulate with negative values )
+    }
+
+    addNum(num){
+        if(this.maxHeap.length === 0 || num < -this.maxHeap[0]){
+            this.maxHeap.push(-num);
+            this.maxHeap.sort((a,b) => a - b);   //max heap via negatives
+        }else{
+            this.minHeap.push(num);
+            this.minHeap.sort((a,b) => a - b);
+        }
+
+        //balance
+
+        if(this.maxHeap.length >this.minHeap.length + 1){
+            this.minHeap.push(-this.maxHeap.shfit());
+            thia.minHeap.sort((a,b) => a- b);
+        }else if (this.minHeap.length > this.maxHeap.length){
+            this.maxHeap.push(-this.minHeap.shift());
+            this.maxHeap.sort((a,b) => a - b);
+        }
+    }
+
+    //Find median
+
+    findMedian(){
+        if(this.minHeap.length === this.maxHeap.length){
+            return (this.minHeap[0 + (-this.maxHeap[0])) / 2;
+        }else {
+            return -this.maxHeap[0];      //median is top of heap of more elements
+        }
+    }
+}
+
+
+Question is Rearrange Characters:- (Heap + Greedy)
+
+Input: "aab"
+Output: "aba"
+
+Input: "aaab"
+Output: "Not possible"
+
+//Steps:--
+1.count the frequency of each character in a string 
+2. push all the characters into max heap according to frequency
+3.pop the character with a highest frequency , and place in the result
+4. hold prev characater which is used(if it has remaining frquency) and add it back
+   to heap in next iteration - ensures no same character are adjacent .
+5.repeat until heap is empty.
+6.final result length = original length - valid answer, else not possible
+
+
+================================CODE================================
+
+function rearrangeString(str){
+    let map = new Map();
+
+    //step 1 : Count frequencies
+      for(let char of str){
+        map.set(char,(map.get(char) || 0) + 1)    //set to 0 or initialized it to 1
+      }
+
+      //step 2 :Max heap using array (custom Comparator)
+
+      const maxHeap =[...map.entries()].sort((a,b) => b[1] - a[1]);
+
+      let prev = null;        //hold previous character and its frequencies
+      let result = '';
+
+
+      while(maxHeap.length > 0){
+        let[char,freq] = maxHeap.shift();     //get highest freq char
+        result += char;
+
+
+        //if theres a previous character to re add 
+
+        if(prev && prev[1] > 0){
+            maxHeap.push(prev);
+        }
+
+        freq -= 1;    //decrease frequency
+        prev = [char,freq];
+
+        //resort the heap 
+        maxHeap.sort((a,b) => b[1] - a[1]);
+      }
+
+      return result.length === str.length ? result : "Not possible";
+
+}
+
+
+question is swapping pairs make sum equal:-
+
+Input:
+A = [4, 1, 2, 1, 1, 2]
+B = [3, 6, 3, 3]
+
+Output:
+[1, 3] or any valid pair which balances the sum.
+
+Explanation:
+Swap 1 from A with 3 from B.
+New sums:
+
+A = 4+3+2+1+1+2 = 13
+
+B = 1+6+3+3 = 13
+
+
+//Steps :--
+1. sumA and sumB 
+  a. to equalize total sum after swapping ,
+     sumA - a + b = sumB - b + a
+     //rearranging 
+
+     2* (a-b) = sumA - sumB
+     => a - b = (sumA - sumB) / 2
+
+   b. we are trying to find a pair(a,b) such way that ,
+      a = b + (sumA - sumB)/2
+
+
+
+================================CODE===============================
+
+fucntion findSwapValues(A,B){
+    const sumA = A.reduce((a,b) => a+b,0);
+    const sumB = B.reduce((a,b) => a+b,0);
+
+    const diff = sumA - sumB;
+
+    if(diff % 2 !== 0) return []; // no such pair exists
+
+    const target = diff/2;
+
+    const setB = new Set(B);
+
+    for (let a of A){
+        const b = a.target;
+     if(setB.has(b)){
+        return[a,b];
+     }
+    }
+    return[];
+}

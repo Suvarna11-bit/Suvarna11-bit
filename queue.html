@@ -1,0 +1,324 @@
+question is Reversing a queue (stack)
+
+i/p q=[10,20,,30,40,50,60,70,80,90,100]
+o/p q=[100,90,80,70,60,50,40,30,201,10]
+
+Pop the elements from the queue and insert into the stack
+ now topmost element of the stack is the last element of the queue.
+Pop the elements of the stack to insert back into the queue
+ the last element is the first one to be inserted into the queue.
+
+ ================CODE================
+
+fucntion print(q){
+    while(q.length > 0){
+        console.log(q.shift() + ' ');
+    }
+}
+
+function reverseQueue(q){
+    let s= [];
+    while(q.length > 0){
+        s.push(q.shift());
+    }
+    while(s.length > 0){
+        q.push(s.pop());
+    }
+}
+
+reverseQueue(q);
+
+
+//question is first negative integer in every window of size k (Sliding window with index tracking)
+
+
+i/p arr[] =[-8,2,3,-6,1] k =2
+o/p =[-8,0,-6,-6]  
+
+explanation: [-8, 2] = -8
+[2, 3]= 0 (does not contain a negative integer)
+[3, -6] = -6
+[-6, 10] = -6
+
+function firstinteger(arr,k){
+    let firstnegindex = 0;
+    let res = [];
+    let n = arr.length;
+
+
+//skip out of windpw and positive elements 
+    for (let i = k -1;i < n;i++){
+        while(firstnegindex < i && (firstnegindex <= i-k || arr[firstnegindex] >= 0)){
+            firstnegindex++;
+        }
+
+        //check if negative element is found , otherwise use 0 
+
+        if(firstnegindex < n && arr[firstnegindex] < 0){
+            res.push(arr[firstnegindex]);
+        }else{
+            res.push(0);
+        }
+    }
+    return res;
+}
+
+
+
+question is stack using two queues:---(Using single queue(FIFO) and recursion stack )
+
+a. create a queue and push first elmeent into it .
+b. after 1 element , push 2 element , and then push first elmeent again and finally pop first element
+c.FIFO,2 elem will be at front , and first elmenet and its copy was popped out.
+d.it acts as stack , arr[i] = arr[i-1], last element is one we are inserting , because 
+initial our last element becomes our first elemnt
+
+
+=======CODE======
+
+clas Stack{
+    constructor(){
+        this.q = [];
+    }
+
+    push(data){
+
+        //get previous size of queue 
+           let s = this.q.length;
+
+           this.q.push(data);
+
+           //pop all the previous elements and put them after current element 
+                 for(let i =0;i<s;i++){
+
+                    //add the front element again
+                       this.q.push(this.q[0]);
+
+                       //delete front elemnt
+                       this.q.shift();
+                 }
+                }
+
+                //removes the top element
+                pop(){
+                    //if there are no elemnts in q1
+                      if(this.q.length === 0)
+                      console.log("No elements");
+                      else 
+                        this.q.shift();
+
+                }
+
+
+                top(){
+                    if(this.q.length === 0)
+                    return -1;
+                    return this.q[0];
+                }
+
+                size(){
+                    console.log(this.q.length);
+                }
+
+                isEmpty(){
+                    //return true if quwue is empty
+                    return this.q.length == =0;
+                }
+
+                front(){
+                    return this.q[0];
+                }
+            }
+
+            console.log("current size": )
+    }
+}
+
+question is minimum tine to rot all oranges (use breadth first search)
+
+0 = empty cell
+
+1 = fresh orange
+
+2 = rotten orange
+
+Each minute, a rotten orange \
+can rot its adjacent fresh oranges (up, down, left, right).
+
+🟠 Goal: Find the minimum time in minutes to rot all oranges. 
+If it’s not possible, return -1.
+
+Input:  arr[][] = [[2, 1, 0, 2, 1], [1, 0, 1, 2, 1], [1, 0, 0, 2, 1]];
+Output: 2
+Explanation: At 0th time frame:
+[2, 1, 0, 2, 1]
+[1, 0, 1, 2, 1]
+[1, 0, 0, 2, 1]
+At 1st time frame:
+[2, 2, 0, 2, 2]
+[2, 0, 2, 2, 2]
+[1, 0, 0, 2, 2]
+At 2nd time frame:
+[2, 2, 0, 2, 2]
+[2, 0, 2, 2, 2]
+[2, 0, 0, 2, 2]
+
+a. create queue => store all rotten oranges 
+b. run a loop ->until queue is not empty and each iteration , 
+dequeue top element 
+  check for all 4-directionally connected cell 
+
+  c. if any cell has fresh orange , change state and  push indices in queue,
+      and increment time by 1 
+
+d. after queue is empty , check if fresh orange remaining , if print -1 ,
+else elapsed time 
+
+
+=============CODE============
+
+funtion isSafe(i,j,n,m){
+    const n = mat.length;
+    const m = mat[0].length;
+
+    const directions = [[1,0],[0,1],[-1,0],[0,-1]];
+
+    const q = [];
+
+    for(let i =0;i<n;i++){
+        for(let j =0;j<m;j++){
+            if(mat[i][j] ===2){
+            q.push([i,j]);
+        }
+        }
+    }
+    let elapsedtime = 0;
+
+    while (q.length > 0) {
+
+        // increase time by 1
+        elapsedTime++;
+
+        let len = q.length;
+        while (len-- > 0) {
+            const [i, j] = q.shift();
+
+            // change 4-directionally connected cells
+            for (const dir of directions) {
+                const x = i + dir[0];
+                const y = j + dir[1];
+
+                // if cell is in the matrix and
+                // the orange is fresh
+                if (isSafe(x, y, n, m) && mat[x][y] === 1) {
+                    mat[x][y] = 2;
+                    q.push([x, y]);
+                }
+            }
+        }
+    }
+
+    // check if any fresh orange is remaining
+    for (let i = 0; i < n; i++) {
+        for (let j = 0; j < m; j++) {
+            if (mat[i][j] === 1) {
+                return -1;
+            }
+        }
+    }
+
+    return Math.max(0, elapsedTime - 1);
+}
+}
+
+
+//question is connect ropes with minimum cost = (Greedy with heap)
+
+i/p = [4,3,2,6]
+o/p = 29 
+Explanation: We can connect the ropes in following ways.
+1) First connect ropes of lengths 2 and 3. Which makes the array [4, 5, 6]. Cost of this operation 2 + 3 = 5. 
+2) Now connect ropes of lengths 4 and 5. Which makes the array [9, 6]. Cost of this operation 4 + 5 = 9.
+3) Finally connect the two ropes and all ropes have connected. Cost of this operation 9 + 6 =15. Total cost is 5 + 9 + 15 = 29. This is the optimized cost for connecting ropes. 
+
+
+
+fcuntion mincost(arr){
+    const p1 = new MinHeap();
+    arr.forEach(num => pq.push(num));
+
+
+    let res = 0;
+
+    //while size of priority queue is more than 1 
+
+     while(pq.size() > 1){
+
+        //extract shortest two ropes from pq
+           const first = pq.pop();
+           const second = pq.pop();
+
+
+           //connect the ropes : update rrsult and insert it into pq 
+
+           res += first + second;
+           ps.push(first+second);
+     }
+
+     return res;
+}
+
+
+class MinHeap{
+    constructor(){
+        this.ehap =[];
+    }
+
+    //insert a value into the heap 
+
+    push(val){
+        this.heap.push(val);
+        this.heapifyUp();
+    }
+
+    //remove and return the smallest element
+      pop(){
+        if(this.heap.length === 1){
+            return this.heap.pop();
+        }
+        const root = this.heap[0];
+        this.heap[0] = this.heap.pop();
+        this.heapifyDown();
+        return root;
+      }
+
+      //return the smallest element without removing it 
+      top(){
+        return this.heap[0];
+      }
+
+      //return the size of loop 
+
+
+      //return the size of heap 
+      size(){
+        return this.heap.length;
+      }
+}
+
+
+========SIMPLIFIED CODE ===========  (Using heapify library )
+
+function mincostToConnectRopes(ropes){
+    const heap = new MinHeap();
+    ropes.forEach(r => heap.push(r));
+
+    let totalCost = 0;
+    while(heap.size() > 1){
+        const cost = heap.pop() + heap.pop();
+        totalCost += cost;
+        heap.push(cost);
+    }
+
+    return totalCost;
+}
