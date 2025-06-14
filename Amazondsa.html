@@ -1,0 +1,350 @@
+//Question :- Search in a row wise and column wise sorted matrix
+
+<!-- Given a matrix mat[][] and an integer x, the task is to check if x is present in mat[][] or not.
+ Every row and column of the matrix is sorted in increasing order. -->
+
+ ---- Cases---
+ Input: x = 62, mat[][] = [[3, 30, 38],
+                          [20, 52, 54],
+                           [35, 60, 69]]
+Output: false
+Explanation: 62 is not present in the matrix.
+
+
+Input: x = 55, mat[][] = [[18, 21, 27],
+                                          [38, 55, 67]]
+Output: true
+Explanation: mat[1][1] is equal to 55.
+
+
+// Naive approach --- traverse through array and check if element is present , if there return true
+
+
+//3 cases 
+
+1. if x> current (elemnts in rows are smaller and entire row gets eliminated, continue search from next row )
+
+2. if x < current(elements in current row are greater, entire column gets eliminated , search from next column)
+
+3. number = current (it will end the search )
+
+function matSearch(mat,x){
+    let n = mat.length, m = mat[0].length;
+    let i = 0, j = m -1;
+
+    while (i < n && j >= 0){
+        if(x > mat[i][j]){
+            i++;
+        }
+        if(x < mat[i][j]){
+            j--;
+        }
+        else {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+2.  Question - How to print matrix in spiral form 
+Given a matrix mat[][] of size m x n, the task is to print all elements of the matrix in spiral form.
+
+
+ Input: mat[][] = [[1,    2,   3,   4],
+                            [5,    6,   7,   8],
+                            [9,   10,  11,  12],
+                            [13,  14,  15,  16]]
+Output: [ 1, 2, 3, 4, 8, 12, 16, 15, 14, 13, 9, 5, 6, 7, 11, 10 ]
+
+//Naive approach - by traversing can mark field that are visited and change the direction when we hit boundary cell
+
+//other approcah - we can print by dividing it into loops and boundaries , printing outward loops first and then moving to inner one
+
+define the boundaries (top right,botton left)
+print top ffrom (l -> r), then right(top-bottom(decrement right))
+print bottom from (r -> l), then left(ottom-top(increment left))
+repeat until all boundaries are crossed
+
+function spirlTraverse(mat){
+    const m = mat.length;
+    const n = mat[0].length;
+
+    const res = [];
+
+    //Initialize boundaries 
+
+    let top = 0 , bottom = m -1,left = 0, right = n - 1;
+
+    //iterating untill all elements are printed
+
+    while( top <= bottom && left<=right){
+//1 condition 
+        for (let i = left; i <= right; ++i){
+            res.push(mat[top][i]);
+        }
+        top++;
+//2 condition
+        for (let i = top; i <= bottom; ++i){
+            res.push(mat[i][right]);
+        }
+        right--;
+//3 condition
+        if(top <= bottom){
+            for (let i = right; i >= left; --i){
+                res.push(mat[bottom][i]);
+            }
+            bottom--;
+        }
+//4 condition
+        if(left <= right){
+            for (let i = bottom; i >= top; --i){
+                res.push(mat[i][lrft]);
+            }
+            left++;
+        }
+    }
+    return res;
+}
+
+
+//Program for array rotation
+Given an array of integers arr[] of size n, 
+the task is to rotate the array elements to the left by d positions.
+
+Input: arr[] = {1, 2, 3, 4, 5, 6}, d = 2
+Output: {3, 4, 5, 6, 1, 2}
+Explanation: After first left rotation, arr[] becomes {2, 3, 4, 5, 6, 1} and 
+after the second rotation, arr[] becomes {3, 4, 5, 6, 1, 2}
+
+Naive approach == rotate one by one 
+
+Efficient approach - n is original array length, rotate array left by d postions, 
+last n - d elements will be at front anf first d elements will be at end 
+
+//copy n-d elements of original array into temporary array 
+2.then copy first d elements at end of temp array 
+3. finally copy all elements back to temp array back to original array
+
+
+function rotateArr(arr,d){
+    let n = arr.length;
+
+//hamdling when d is greater than size of array
+    d %= n;
+
+//reverse 1 d elemts     d = 2 (reverse that2 first d elements)
+    reverse(arr,0,d-1);
+
+//reverse n-d elements      [6 5 4 3]
+    reverse(arr,d,n-1);
+
+//reverse the entire array     [6 5 4 3 1 2]
+    reverse(arr,0,n-1);
+}
+
+//reverse a  non-d portion of an array
+fucntion reverse(arr,start,end){
+    while(start < end){
+        let temp = arr[start];
+        arr[start] = arr[end];
+        arr[end] = temp;
+        start++;
+        end--;            [3 4 5 6 1 2]
+    }
+}
+rotateArr(arr,d);
+
+
+Question is Trapping Rain Water 
+Trapping Rainwater Problem states that given an array of n non-negative integers arr[] representing an elevation map where the width of each bar is 1, 
+compute how much water it can trap after rain
+
+Input: arr[] = [3, 0, 1, 0, 4, 0, 2]
+Output: 10
+Explanation: The expected rainwater to be trapped is shown in the above image.
+
+
+Input: arr[] = [3, 0, 2, 0, 4]
+Output: 7
+Explanation: We trap 0 + 3 + 1 + 3 + 0 = 7 units.
+
+//Naive approach - traverse each array element and find highest bars on right and left side .
+then take the smaller of two heights . diff ben smaller height - current height elem. == amount of water stored 
+
+
+//expected approach - Two pointers technique - O(n)
+
+1. If we considered subarray arr[left..right] , we can get water fpr arr[left] or arr[right],
+if we have left max arr[0..left-1] , right max arr[right+1..n-1]
+
+2. if left max < right max  g o for arr[left] else arr[right]
+3.if we choose arr[left] , water would be left max - arr[left]
+4. if we choose arr[right] , water would be right max - arr[right]
+
+
+Question is 2 Sum - cOUNT Pairs with given sum
+
+-----Given an array arr[] of n integers and a target value, the task is to find the number of pairs of integers in the array whose sum is equal to target.
+
+Input: arr[] = {1, 1, 1, 1}, target = 2
+Output:  6
+Explanation: Pairs with sum 2 are (1, 1), (1, 1), (1, 1), (1, 1), (1, 1) and (1, 1).
+
+
+Input: arr[] = {10, 12, 10, 15, -1}, target = 125
+Output:  0
+
+//Naive - generating all possible pairs 
+//better - two pointer and using hashmap or dictionary, because we keep each number in map as we go through array .
+1.for each number calculate(target- current number) 
+2. check if it is in map,
+3, if it is  then increment the count variable by occurences of complement in map
+
+
+function countPairs(arr,target){
+    const freq = new Map();
+    let count = 0;
+
+    for(let i =0;i < arr.length ;i++){
+        if(freq.has(target - arr[i])){
+            count += freq.get(target - arr[i]);
+        }
+        //if not in map  then  increment the frequency of arr[i]
+        freq.set(arr[i],(freq.get(arr[i]) || 0) + 1);
+    }
+    return count;
+}
+
+
+question is Find the subarray with least average
+-- given an array of size n and integer k such that k <= n.
+
+Input:  arr[] = {3, 7, 90, 20, 10, 50, 40}, k = 3
+Output: Subarray between indexes 3 and 5
+The subarray {20, 10, 50} has the least average 
+among all subarrays of size 3.
+
+efficient approach - use sliding window
+
+//sum of curr window = remove first ele of previous window  and add curr element(last ele of curr window)
+
+1) Initialize res_index = 0 // Beginning of result index
+2) Find sum of first k elements. Let this sum be 'curr_sum'
+3) Initialize min_sum = sum
+4) Iterate from (k+1)'th to n'th element, do following
+   for every element arr[i]
+      a) curr_sum = curr_sum + arr[i] - arr[i-k]
+      b) If curr_sum < min_sum
+           res_index = (i-k+1)
+5) Print res_index and res_index+k-1 as beginning and ending
+   indexes of resultant subarray.
+
+
+   function findMinAvgSubarray(arr,n,k){
+      if ( n < k)
+      return;
+
+      let res_index = 0;
+
+      let curr_sum = 0;
+
+//compute sum of first subarray of size k 
+       for (let i = 0;i< k;i++){
+        curr_sum += arr[i];
+
+        let min_sum = curr_sum;
+
+//Traverse from (k+1)th element to n th element
+for (let i = k ;i<n;i++){
+    curr_sum += arr[i] - arr[i-k];
+    if(curr_sum < min_sum){
+        min_sum = curr_sum;
+        res_index = (i - k + 1);
+    }
+}
+
+return res_index;
+       }
+   }
+
+question is find dupliactes in an array 
+
+
+Given an array arr[] of n elements that contains elements from 0 to n-1, with any of these numbers appearing any number of times.
+ The task is to find the repeating numbers. repeating number should only be printed occurences
+
+ Input: n = 7, arr[] = [1, 2, 3, 6, 3, 6, 1]
+Output: 1, 3, 6
+Explanation: The numbers 1 , 3 and 6 appears more than once in the array.
+
+--approach - can be done using hashmap or auxillary array
+1.we can iterate over ecah element to find duplicates 
+2. if no duplicate found add -1 to result 
+3. return result array containing duplicates or 1 
+
+
+function findDupliactes(arr){
+    const n = arr.length;
+    const freqArr = new Array(n).fill(0);
+    const result = [];
+
+iterate through array and count element frequencies 
+
+   for (const num of arr){
+    freqArr[num]++;
+   }
+
+iterate through all elements to check duplicates
+    for(let i =0;i<n;i++){
+        if(freqArr[i] > 1){
+            result.push(i);
+    }
+    if(result.length === 0){
+        result.push(-1);
+    }
+    return result;
+}
+
+question is 3 sum - triplet sum in array
+
+Given an array arr[] of size n and an integer sum, the task is to check if there is a triplet in the array which sums up to the given target sum.
+
+Examples: 
+
+Input: arr[] = [1, 4, 45, 6, 10, 8], target = 13
+Output: true 
+Explanation: The triplet [1, 4, 8] sums up to 13
+
+naive approach - generating all triplets
+better- hash set 
+efficient - two pointer and sorting
+
+function threeSum(arr, target){
+    let n = arr.length;
+    arr.sort((a,b) => a - b);
+
+    
+    // Fix the first element as arr[i]
+    for (let i = 0; i < n - 2; i++) {
+
+        //initialize right and left
+
+        let l = i + 1, r = n -1;
+
+        let sum = target - arr[i];
+
+        while (l<r){
+            if(arr[l] + arr[r] === sum)
+            return true;
+            if(arr[l] + arr[r] < sum)
+            l++;
+            else if(arr[l] + arr[r] > sum)
+            r--;
+        }
+    }
+
+    return false;
+}
+
+
